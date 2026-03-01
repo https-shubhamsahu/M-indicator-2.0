@@ -1,0 +1,277 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms & Privacy - m-Indicator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+        .terms-container h3 {
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-size: 1.5rem;
+        }
+
+        .terms-container p {
+            color: var(--text-light);
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+      <!-- Side Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <aside class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+            <div class="drawer-profile">
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none; margin: 0; padding: 0;">
+          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name" style="font-size: 1.1rem;"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer-nav">
+      <li><a href="/" class="active"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home</a></li>
+      <li><a href="/#features"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg></span> Ecosystem</a></li>
+      <li><a href="/#cities"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Our Cities</a></li>
+      <li><a href="/#story"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Origin Story</a></li>
+      <li><a href="/news.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> News</a></li>
+      <li><a href="/upcoming.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> M-Indicator 2.0</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/resumedb.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span> ResumeDB</a></li>
+      <li><a href="/ad.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> Advertising</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/contact.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> Contact Us</a></li>
+      <li><a href="/terms.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Privacy & Terms</a></li>
+    </ul>
+    <div class="drawer-footer">
+      <div class="drawer-socials">
+        <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X / Twitter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+          </svg>
+        </a>
+      </div>
+      <p class="drawer-copyright">&copy; 2026 Mobond App · Built for the Indian Commuter</p>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-content">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none;">
+          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+            <div class="nav-links">
+        <a href="/upcoming.html" style="color:var(--primary-blue);font-weight:700;font-size:1.05rem;">M-Indicator 2.0</a>
+        <a href="/resumedb.html" class="btn"
+          style="background-color:var(--primary-red);color:white;border-radius:30px;font-weight:700;padding:12px 28px;font-size:1.05rem;">ResumeDB</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('sideDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const btn = document.getElementById('hamburgerBtn');
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('open');
+      btn.classList.toggle('open');
+      document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeDrawer() {
+      document.getElementById('sideDrawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+      document.getElementById('hamburgerBtn').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  </script>
+
+    <!-- Terms and Privacy Content -->
+    <main class="bg-light pt-80 pb-80" style="margin-top: 76px;">
+        <div class="container terms-container"
+            style="max-width: 800px; background: white; padding: 48px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h1 class="text-blue" style="font-size: 2.5rem; margin-bottom: 8px;">Terms and Privacy Policy</h1>
+            <p style="font-size: 0.95rem; margin-bottom: 32px;">Please read these terms and conditions prior to using
+                the products and services offered by Mobond.</p>
+
+            <p>By using the product, you agree to be legally bound by these terms and conditions, privacy policy, and
+                terms of services (including without limitation all disclaimers, exclusion of warranties, and
+                limitations of liability contained therein). You also agree to be bound by Google’s Terms of Service. If
+                you do not agree with these terms, please do not use the products and services offered by Mobond.</p>
+
+            <h3 class="text-blue">A Word of Caution</h3>
+            <p><strong>m-Indicator is NOT an official publication of Indian Railways, BEST, or RTO.</strong> Train
+                timings may not always match actual timings. PNR status and SPOT train service are provided by INDIAN
+                RAILWAYS, and premium SMS charges (generally Rs.3) are applicable. m-Indicator acts strictly as an
+                interface to this service.</p>
+            <p>Mobond is not responsible for any damage caused by the information shown by this software. Please
+                cross-verify the information. You may incur call or SMS charges for using certain services; contact your
+                service provider for details regarding charges.</p>
+
+            <h3 class="text-blue">Privacy Policy</h3>
+            <p>We collect the following information when you use the software: your mobile device's hardware
+                information, unique ID, and location. This information is kept private to Mobond and will not be
+                disclosed to third parties. We collect this information to provide location-based services and relevant
+                advertisements.</p>
+            <p>Advertisements are accepted when they conform to ethical standards. Mobond does not verify the
+                authenticity of advertisers or the claims made in Advertisements. Mobond shall not be responsible or
+                liable for any loss or damage of any kind incurred as the result of your relationship with an
+                advertiser.</p>
+            <p>m-Indicator may consume bandwidth for showing advertisements, which may be images or videos. To save
+                bandwidth, it may store video advertisements on mobile memory so they are not downloaded frequently. We
+                use Google Maps API(s), and by using our services, you agree to the Google Privacy Policy.</p>
+            <p>You may receive text messages (SMS), notifications, or emails from Mobond containing new product
+                information, updates, and alerts. You agree that messages from Mobond received on your registered number
+                will not constitute an unsolicited commercial communication, irrespective of your enrollment in any Do
+                Not Call Registry.</p>
+
+            <h3 class="text-blue">Information Security</h3>
+            <p>We take appropriate security measures to protect against unauthorized access, alteration, disclosure, or
+                destruction of data. These include internal reviews of our data collection, storage, and processing
+                practices, as well as security measures such as appropriate encryption.</p>
+
+            <h3 class="text-blue">Service Availability & Liability</h3>
+            <p>Mobond makes no guarantees for the uninterrupted and continuous availability of the Products and/or
+                Services, or of any specific feature(s). The Products and/or Services are provided "AS IS" and are
+                subject to the disclaimers of warranty and limitations of liability detailed in this agreement, which
+                are subject to testing by Users before entering into this agreement.</p>
+            <p>Mobond reserves the right to change or terminate the Products and/or the Services at any time.</p>
+
+            <h3 class="text-blue">Customer Service</h3>
+            <p>Mobond does not take responsibility for providing any customer service related to the software.</p>
+
+            <h3 class="text-blue">Changes to the Terms</h3>
+            <p>Mobond may make changes to these Terms from time to time, with or without notice. When these changes are
+                made, any new terms will be made available to you at www.mobond.com. You understand and agree that if
+                you use the product and Services after the date on which these Terms have changed, Mobond will treat
+                your use as acceptance of the updated terms.</p>
+
+            <hr style="border: 0; height: 1px; background: rgba(0,0,0,0.1); margin: 48px 0 24px 0;">
+            <p style="font-size: 0.9rem;"><em>All copyrights of this product are reserved with Mobond. <br>Last Updated:
+                    Nov 2014</em></p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="margin-top: 0;">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo" style="text-decoration: none;">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#C10000" />
+                        <circle cx="50" cy="50" r="26" fill="white" />
+                        <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+                        <circle cx="50" cy="50" r="7" fill="white" />
+                        <path d="M18 50L30 40V60L18 50Z" fill="white" />
+                        <path d="M82 50L70 40V60L82 50Z" fill="white" />
+                        <rect x="34" y="47" width="8" height="6" fill="white" />
+                        <rect x="58" y="47" width="8" height="6" fill="white" />
+                    </svg>
+                    <span class="brand-name text-white"><strong>m</strong>-Indicator</span>
+                </a>
+                <p class="mt-2 text-light">Built for the Indian Commuter.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="/contact.html">Contact Us</a>
+                    <a href="/resumedb.html">ResumeDB</a>
+                    <a href="/ad.html" style="font-weight: 600; color: var(--primary-blue);">Advertise with Us</a>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <a href="/terms.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                </div>
+                <div class="link-group">
+                    <h4>Connect</h4>
+                    <div style="display: flex; gap: 16px;">
+                        <a href="https://x.com/m_indicator_app?s=20" target="_blank"
+                            style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Mobond App. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

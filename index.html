@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>m-Indicator - Smart Transit App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    @keyframes leaflet-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .leaflet-popup-tip {
+      display: none !important;
+    }
+
+    #india-map .leaflet-control-zoom a {
+      color: #1A428A;
+    }
+  </style>
+</head>
+
+<body class="no-scroll">
+  <!-- Intro Video Overlay -->
+  <div id="intro-overlay">
+    <div class="intro-logo-container">
+      <img src="/m-indicator opening logo.jpeg" alt="m-Indicator Intro" id="intro-logo">
+    </div>
+  </div>
+
+  <div id="app"></div>
+  <!-- Side Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <aside class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <div class="drawer-profile">
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none; margin: 0; padding: 0;">
+          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name" style="font-size: 1.1rem;"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer-nav">
+      <li><a href="/" class="active"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg></span> Home</a></li>
+      <li><a href="/#features"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="9" height="9" rx="1" />
+              <rect x="13" y="2" width="9" height="9" rx="1" />
+              <rect x="2" y="13" width="9" height="9" rx="1" />
+              <rect x="13" y="13" width="9" height="9" rx="1" />
+            </svg></span> Ecosystem</a></li>
+      <li><a href="/#cities"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg></span> Our Cities</a></li>
+      <li><a href="/#story"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+            </svg></span> Origin Story</a></li>
+      <li><a href="/news.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg></span> News</a></li>
+      <li><a href="/upcoming.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg></span> M-Indicator 2.0</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/resumedb.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+              <line x1="12" y1="12" x2="12" y2="16" />
+              <line x1="10" y1="14" x2="14" y2="14" />
+            </svg></span> ResumeDB</a></li>
+      <li><a href="/ad.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg></span> Advertising</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/contact.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22 6 12 13 2 6" />
+            </svg></span> Contact Us</a></li>
+      <li><a href="/terms.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg></span> Privacy & Terms</a></li>
+    </ul>
+    <div class="drawer-footer">
+      <div class="drawer-socials">
+        <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X / Twitter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+          </svg>
+        </a>
+      </div>
+      <p class="drawer-copyright">&copy; 2026 Mobond App · Built for the Indian Commuter</p>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-content">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none;">
+          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+      <div class="nav-links">
+        <a href="/upcoming.html" style="color:var(--primary-blue);font-weight:700;font-size:1.05rem;">M-Indicator
+          2.0</a>
+        <a href="/resumedb.html" class="btn"
+          style="background-color:var(--primary-red);color:white;border-radius:30px;font-weight:700;padding:12px 28px;font-size:1.05rem;">ResumeDB</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('sideDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const btn = document.getElementById('hamburgerBtn');
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('open');
+      btn.classList.toggle('open');
+      document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeDrawer() {
+      document.getElementById('sideDrawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+      document.getElementById('hamburgerBtn').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  </script>
+
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-bg-anim">
+      <!-- Background Layers (furthest to closest) -->
+      <div class="hero-layer layer-skyline-back"></div>
+      <div class="hero-layer layer-skyline-front"></div>
+
+      <div class="hero-layer layer-track"></div>
+      <div class="hero-layer layer-metro"></div>
+
+      <div class="hero-layer layer-train"></div>
+
+      <div class="hero-layer layer-road"></div>
+      <div class="hero-layer layer-vehicles"></div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1>Smart Transit for<br><span class="highlight-red">Smart Cities</span></h1>
+        <p>Navigate Mumbai and Indian cities like a pro. Live train tracking, bus routes, and offline timetables at your
+          fingertips.</p>
+        <div class="hero-buttons center">
+          <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
+            <img src="/appstore.png" alt="Download on App Store" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank"
+            class="store-img-btn">
+            <img src="/googleplay.png" alt="Get it on Google Play" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Brands / Stats Log -->
+  <section class="trust-stats bg-light" id="stats">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <h2 class="text-blue count-up" data-target="10" data-suffix="M+">0M+</h2>
+        <p>Android Downloads</p>
+      </div>
+      <div class="stat-item">
+        <h2 class="text-blue count-up" data-target="84" data-suffix="K+">0K+</h2>
+        <p>Schedule Entries</p>
+      </div>
+      <div class="stat-item">
+        <h2 class="text-blue count-up" data-target="232" data-suffix="">0</h2>
+        <p>Trains Tracked</p>
+      </div>
+      <div class="stat-item">
+        <h2 class="text-blue count-up" data-target="100" data-suffix="%">0%</h2>
+        <p>Offline Ready</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container section-header reveal">
+      <h2>Comprehensive <span class="highlight-blue">Features</span></h2>
+      <p>Your ultimate digital companion for seamless urban mobility.</p>
+    </div>
+
+    <div class="container">
+      <div class="modern-features-grid reveal">
+
+        <!-- Local Train -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-blue-light text-blue">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="3" width="16" height="18" rx="2" ry="2"></rect>
+              <path d="M4 11h16"></path>
+              <path d="M12 3v8"></path>
+              <circle cx="8" cy="16" r="1.5"></circle>
+              <circle cx="16" cy="16" r="1.5"></circle>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Local Train Timetable</h3>
+        </div>
+
+        <!-- Metro -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-red-light text-red">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16"></path>
+              <path d="M4 8h16"></path>
+              <rect x="6" y="8" width="12" height="12" rx="2"></rect>
+              <circle cx="9" cy="16" r="1"></circle>
+              <circle cx="15" cy="16" r="1"></circle>
+              <path d="M12 8v4"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Metro Timetable</h3>
+        </div>
+
+        <!-- Mono Rail -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-blue-light text-blue">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 15h18"></path>
+              <path d="M8 15v3"></path>
+              <path d="M16 15v3"></path>
+              <path d="M12 4a3 3 0 0 0-3 3v8h6V7a3 3 0 0 0-3-3z"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Mono Rail Timetable</h3>
+        </div>
+
+        <!-- Bus Routes -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-red-light text-red">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="3" width="16" height="14" rx="2" ry="2"></rect>
+              <path d="M8 17v2"></path>
+              <path d="M16 17v2"></path>
+              <path d="M4 11h16"></path>
+              <circle cx="8" cy="14" r="1"></circle>
+              <circle cx="16" cy="14" r="1"></circle>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Bus Routes</h3>
+        </div>
+
+        <!-- Express Train -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-blue-light text-blue">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 21l3-3h8l3 3"></path>
+              <rect x="4" y="5" width="16" height="12" rx="2"></rect>
+              <path d="M4 10h16"></path>
+              <path d="M12 5v5"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Express Train Timetable</h3>
+        </div>
+
+        <!-- Auto Fares -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-red-light text-red">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 6l4 5 1 5-2 1-14-1-2-5 3-5h10z"></path>
+              <circle cx="6" cy="16" r="2"></circle>
+              <circle cx="16" cy="16" r="2"></circle>
+              <path d="M11 6v5h7"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Auto Fares</h3>
+        </div>
+
+        <!-- Taxi Fares -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-blue-light text-blue">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 10l-2 2v6h2v2h2v-2h10v2h2v-2h2v-6l-2-2"></path>
+              <path d="M19 10L17 5H7L5 10"></path>
+              <rect x="10" y="3" width="4" height="2"></rect>
+              <circle cx="7" cy="14" r="1"></circle>
+              <circle cx="17" cy="14" r="1"></circle>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Taxi Fares</h3>
+        </div>
+
+        <!-- Ferry -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-red-light text-red">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 17c-1.5 0-2 1-4 1s-2.5-1-4-1-2 1-4 1-2.5-1-4-1-2 1-4 1"></path>
+              <path d="M22 21c-1.5 0-2 1-4 1s-2.5-1-4-1-2 1-4 1-2.5-1-4-1-2 1-4 1"></path>
+              <path d="M4 16h16l-3-6H7l-3 6z"></path>
+              <path d="M9 10v-3h6v3"></path>
+              <path d="M12 7V4"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Ferry</h3>
+        </div>
+
+        <!-- Women Safety -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper" style="background: #fdf2f8; color: #db2777;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z"></path>
+              <path d="M12 12V3"></path>
+              <path d="M9 7h6"></path>
+              <path d="M12 21v3"></path>
+              <path d="M9 24h6"></path>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Women Safety</h3>
+        </div>
+
+        <!-- Emergency No. -->
+        <div class="m-feature-card">
+          <div class="m-icon-wrapper bg-red-light text-red">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="m-feature-title">Emergency No.</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Testimonials Section -->
+  <section class="testimonials-section bg-light" id="testimonials"
+    style="padding: 80px 0; overflow: hidden; position: relative;">
+    <div class="container text-center" style="margin-bottom: 40px;">
+      <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--primary-blue);">What Mumbai is Saying</h2>
+      <p style="color: var(--text-light); font-size: 1.125rem;">Live reviews sourced directly from the Google Play
+        Store.</p>
+    </div>
+
+    <div class="marquee-wrapper">
+      <div class="marquee">
+        <!-- Live Play Store Review 1 -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every
+            improvement with every update. No need to look for any another app of this type."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo"
+              alt="Basant Malpani" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Basant Malpani</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Play Store Review 2 -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow
+            local, Mail train. its easy to use. Till now happy with the app."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw"
+              alt="Jeniferstella" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Jeniferstella</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Play Store Review 3 -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Apps like m-Indicator set a great example of how public service apps should be developed.
+            The app is free to use and provides accurate and helpful information."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjVNzAEydPKlRn6oAyt_nd34dvcophHBm1WShVwjHRIrgRKS5Mg"
+              alt="Deepak Sarafdar" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Deepak Sarafdar</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Play Store Review 4 -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★☆</div>
+          <p class="t-text">"App is good. Many newly added AC buses are showing in the list. Helpful for new commuters
+            navigating municipal corporation transport buses."</p>
+          <div class="t-user">
+            <img
+              src="https://play-lh.googleusercontent.com/a/ACg8ocIMs5hCiTA13bCCaOl6Xm0Eo7nlnrCt3JHyy6ENDQWcx9P8c3s=mo"
+              alt="Shrikant Panchal" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Shrikant Panchal</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate for CSS Marquee Loop -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every
+            improvement with every update. No need to look for any another app of this type."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo"
+              alt="Basant Malpani" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Basant Malpani</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate for CSS Marquee Loop -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow
+            local, Mail train. its easy to use. Till now happy with the app."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw"
+              alt="Jeniferstella" referrerpolicy="no-referrer">
+            <div class="t-info">
+              <strong>Jeniferstella</strong>
+              <span>Google Play Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story & Extras Section -->
+  <section class="story-extras" id="story" style="padding: 0 0 120px 0;">
+    <div class="container">
+      <div style="display: flex; flex-wrap: wrap; gap: 64px; align-items: center;">
+        <div style="flex: 1; min-width: 300px;">
+          <h2 style="font-size: 2.5rem; margin-bottom: 24px;">Born out of <br><span class="highlight-red">commuter
+              frustration</span></h2>
+          <p style="color: var(--text-light); font-size: 1.125rem; margin-bottom: 24px;">Launched in 2010 by
+            <strong>Sachin
+              Suryakant Teke</strong>, m-Indicator started because one tech-commuter was fed up with chaotic train
+            information. It
+            wasn't just built for tech; it was built as a <strong>digital lifeline</strong> to navigate complex local
+            transport realistically.
+          </p>
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+            <img src="/founder.png" alt="Sachin Teke"
+              style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+            <div>
+              <div style="font-weight: 700; color: var(--text-dark); font-size: 1.1rem;">Sachin Suryakant Teke</div>
+              <a href="https://www.linkedin.com/in/sachin-teke-314213b3/" target="_blank"
+                style="color: var(--primary-blue); font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                </svg>
+                Connect on LinkedIn
+              </a>
+            </div>
+          </div>
+          <ul class="city-list">
+            <li><span class="dot red"></span> Women's Safety Module (Works Offline via SMS)</li>
+            <li><span class="dot blue"></span> Emergency Police & Jurisdiction Contacts</li>
+            <li><span class="dot red"></span> Hidden Peak-Hour "Less Crowded Train" pointers</li>
+            <li><span class="dot blue"></span> Classifieds, Jobs & Weekend Travel Guides</li>
+          </ul>
+        </div>
+        <div
+          style="flex: 1; min-width: 300px; background: var(--bg-light); padding: 40px; border-radius: 24px; border: 1px solid rgba(0,0,0,0.05);">
+          <h3 style="margin-bottom: 16px; font-size: 1.5rem; color: var(--primary-blue);">A Mobility Data Goldmine</h3>
+          <p style="color: var(--text-light); margin-bottom: 24px;">With tens of millions of daily routes queried and
+            shared, m-Indicator holds one of India's richest mobility datasets. This positions it perfectly to spearhead
+            future urban traffic routing and expansive analytic capabilities.</p>
+
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- About Mobond Section -->
+  <section class="about-mobond bg-light" id="about"
+    style="padding: 100px 0; overflow: hidden; border-top: 1px solid rgba(0,0,0,0.05);">
+    <div class="container">
+      <div class="about-mobond-content reveal"
+        style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 64px;">About <span
+            class="highlight-blue">Mobond</span></h2>
+
+        <div
+          style="background: white; border-radius: 24px; padding: 48px; padding-top: 80px; box-shadow: 0 12px 32px rgba(0,0,0,0.05); max-width: 900px; margin: 0 auto 64px; position: relative; border: 1px solid rgba(0,0,0,0.04);">
+          <div
+            style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: white; padding: 16px 28px; border-radius: 20px; box-shadow: 0 8px 24px rgba(26,66,138,0.15); display: flex; align-items: center; justify-content: center; width: 180px; height: 100px; border: 2px solid #f0f4f8;">
+            <img src="/mobond logo.png" alt="Mobond Logo" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(193,0,0,0.1)" style="margin-bottom: 24px;">
+            <path
+              d="M14.017 21v-7.391c0-5.714 4.14-10.378 9.983-10.609l.002.396c0 .321 0 5.4.004 5.61-.397-.03-2.613-.016-3.841.258-1.57.348-2.673 1.341-3.267 2.923-.284.757-.428 1.636-.511 3.011l-2.37.002zM6.027 21v-7.391c0-5.714 4.136-10.378 9.979-10.609l.002.396c0 .321 0 5.4.004 5.61-.397-.03-2.613-.016-3.841.258-1.57.348-2.673 1.341-3.267 2.923-.284.757-.428 1.636-.511 3.011l-2.366.002z" />
+          </svg>
+
+          <p style="font-size: 1.15rem; color: var(--text-light); line-height: 1.8;">
+            Mobond launched our first free product <strong>m-Indicator</strong> in May 2010. <strong>Mobond</strong> is
+            a combination of two words <em>'Mob'</em> and <em>'Bond'</em>. The name suggests our aim is <strong>'bonding
+              the mob'</strong> or 'bonding the angry crowd'.<br><br>Mobond is dedicated to building software products
+            which will be fundamentally useful to the masses. We regularly collect and process massive amounts of
+            transit data from cities and towns in India to provide updated, reliable travel information to millions of
+            daily commuters.
+          </p>
+        </div>
+
+        <h3 style="font-size: 1.75rem; font-weight: 700; color: var(--text-dark); margin-bottom: 16px;">Featured In</h3>
+      </div>
+    </div>
+
+    <div class="logo-marquee-wrapper reveal">
+      <div class="logo-marquee">
+        <!-- Original Set -->
+        <img src="/logos/times-of-india.png" alt="Times of India">
+        <img src="/logos/mid-day.png" alt="Mid-Day">
+        <img src="/logos/hindustan-times.png" alt="Hindustan Times">
+        <img src="/logos/loksattap.png" alt="Loksatta">
+        <img src="/logos/lokmat.jpg" alt="Lokmat">
+        <img src="/logos/prahar.png" alt="Prahar">
+        <img src="/logos/saamana.jpg" alt="Saamana">
+
+        <!-- Duplicates for scrolling effect -->
+        <img src="/logos/times-of-india.png" alt="Times of India">
+        <img src="/logos/mid-day.png" alt="Mid-Day">
+        <img src="/logos/hindustan-times.png" alt="Hindustan Times">
+        <img src="/logos/loksattap.png" alt="Loksatta">
+        <img src="/logos/lokmat.jpg" alt="Lokmat">
+        <img src="/logos/prahar.png" alt="Prahar">
+        <img src="/logos/saamana.jpg" alt="Saamana">
+      </div>
+    </div>
+  </section>
+
+  <!-- City Overview Section -->
+  <section class="cities-section" id="cities">
+    <div class="container cities-content">
+      <div class="cities-text">
+        <h2>Connecting India's<br><span class="highlight-blue">Mega Cities</span></h2>
+        <p>From the bustling local trains of Mumbai to the sprawling metro network of Delhi, m-Indicator brings clarity
+          to urban mobility across India.</p>
+        <ul class="city-list">
+          <li><span class="dot red"></span> Mumbai (Local, Metro, Bus, Mono)</li>
+          <li><span class="dot blue"></span> Pune (Bus, Local)</li>
+          <li><span class="dot red"></span> Delhi (Metro, Bus)</li>
+          <li><span class="dot blue"></span> Ahmedabad, Bengaluru &amp; more...</li>
+        </ul>
+        <a href="#download" class="link-arrow">View All Features &rarr;</a>
+      </div>
+      <div class="cities-map">
+        <div id="india-map"
+          style="width:100%; height:420px; border-radius:20px; overflow:hidden; box-shadow:0 8px 40px rgba(26,66,138,0.18);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Init Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var map = L.map('india-map', {
+        center: [20.5937, 78.9629],
+        zoom: 5,
+        zoomControl: true,
+        scrollWheelZoom: false,
+        attributionControl: false
+      });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(map);
+
+      function makeIcon(color) {
+        return L.divIcon({
+          className: '',
+          html: '<div style="width:16px;height:16px;background:' + color + ';border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.4);position:relative;"><div style="width:32px;height:32px;background:' + color + '33;border-radius:50%;position:absolute;top:-8px;left:-8px;animation:leaflet-pulse 2s ease-in-out infinite;"></div></div>',
+          iconSize: [16, 16],
+          iconAnchor: [8, 8],
+          popupAnchor: [0, -12]
+        });
+      }
+
+      var redIcon = makeIcon('#C10000');
+      var blueIcon = makeIcon('#1A428A');
+
+      var cities = [
+        { name: 'Mumbai', lat: 19.0760, lng: 72.8777, icon: redIcon, modes: 'Local Train · Metro · Bus · Mono Rail' },
+        { name: 'Navi Mumbai', lat: 19.0368, lng: 73.0158, icon: redIcon, modes: 'Local Train · Bus' },
+        { name: 'Thane', lat: 19.2183, lng: 72.9781, icon: redIcon, modes: 'Local Train · Bus' },
+        { name: 'Pune', lat: 18.5204, lng: 73.8567, icon: blueIcon, modes: 'Bus · Local Train' },
+        { name: 'Delhi', lat: 28.6139, lng: 77.2090, icon: redIcon, modes: 'Metro · Bus · DTC' },
+        { name: 'Bengaluru', lat: 12.9716, lng: 77.5946, icon: blueIcon, modes: 'Metro · Bus · BMTC' },
+        { name: 'Ahmedabad', lat: 23.0225, lng: 72.5714, icon: blueIcon, modes: 'AMTS Bus · BRTS · Metro' },
+        { name: 'Nashik', lat: 19.9975, lng: 73.7898, icon: blueIcon, modes: 'City Bus' },
+        { name: 'Nagpur', lat: 21.1458, lng: 79.0882, icon: blueIcon, modes: 'Bus · Metro' },
+        { name: 'Surat', lat: 21.1702, lng: 72.8311, icon: blueIcon, modes: 'BRTS Bus' },
+      ];
+
+      cities.forEach(function (city) {
+        L.marker([city.lat, city.lng], { icon: city.icon })
+          .addTo(map)
+          .bindPopup(
+            '<div style="font-family:Inter,sans-serif;min-width:150px;">'
+            + '<div style="font-weight:800;font-size:0.95rem;color:#0f172a;margin-bottom:4px;">' + city.name + '</div>'
+            + '<div style="font-size:0.78rem;color:#64748b;">' + city.modes + '</div>'
+            + '</div>',
+            { offset: [0, -4] }
+          );
+      });
+
+      // Ensure map renders correctly after intro overlay fades out
+      setTimeout(function () { map.invalidateSize(); }, 3200);
+      // Also invalidate on window resize
+      window.addEventListener('resize', function () { map.invalidateSize(); });
+    });
+  </script>
+
+
+  <!-- Download CTA -->
+  <section class="cta-section" id="download">
+    <div class="container cta-box">
+      <div class="cta-content">
+        <h2>Ready to make your commute smoother?</h2>
+        <p>Join millions of smart commuters and never miss a beat.</p>
+        <div class="hero-buttons center">
+          <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
+            <img src="/appstore.png" alt="Download on App Store" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank"
+            class="store-img-btn">
+            <img src="/googleplay.png" alt="Get it on Google Play" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name text-white"><strong>m</strong>-Indicator</span>
+        </div>
+        <p class="mt-2 text-light">Built for the Indian Commuter.</p>
+      </div>
+      <div class="footer-links">
+        <div class="link-group">
+          <h4>Company</h4>
+          <a href="#">About Us</a>
+          <a href="/contact.html">Contact Us</a>
+          <a href="/resumedb.html">ResumeDB</a>
+          <a href="/news.html" style="font-weight: 700; color: var(--primary-blue);">News</a>
+          <a href="/ad.html" style="font-weight: 600; color: var(--primary-blue);">Advertise with Us</a>
+        </div>
+        <div class="link-group">
+          <h4>Legal</h4>
+          <a href="/terms.html">Privacy Policy</a>
+          <a href="/terms.html">Terms of Service</a>
+        </div>
+        <div class="link-group">
+          <h4>Connect</h4>
+          <div style="display: flex; gap: 16px;">
+            <a href="https://x.com/m_indicator_app?s=20" target="_blank"
+              style="color: #A0AEC0; transition: color 0.3s ease;" onmouseover="this.style.color='var(--primary-red)'"
+              onmouseout="this.style.color='#A0AEC0'">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+              onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+              onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Mobond App. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

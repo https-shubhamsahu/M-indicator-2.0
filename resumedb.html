@@ -1,0 +1,987 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResumeDB - m-Indicator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+        /* =============================================
+           RESUMEDB PAGE — Light Professional Theme
+           Primary: #1A428A (m-Indicator Blue)
+           Accent:  #C10000 (m-Indicator Red)
+           ============================================= */
+        :root {
+            --pro-bg: #f0f4f8;
+            --pro-white: #ffffff;
+            --pro-blue: #1A428A;
+            --pro-blue-light: #e8eef8;
+            --pro-blue-mid: #2d5fba;
+            --pro-red: #C10000;
+            --pro-text: #0f172a;
+            --pro-text-mid: #334155;
+            --pro-text-muted: #64748b;
+            --pro-border: #e2e8f0;
+            --pro-border-focus: #1A428A;
+            --pro-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --pro-shadow-md: 0 4px 16px rgba(26, 66, 138, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+            --pro-shadow-lg: 0 12px 40px rgba(26, 66, 138, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .career-main {
+            margin-top: 76px;
+            overflow-x: hidden;
+            background: var(--pro-bg);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============ ResumeDB Hero Section ============ */
+        .resume-db-hero {
+            background: linear-gradient(160deg, #1A428A 0%, #0f2a5c 100%);
+            color: white;
+            padding: 72px 24px 56px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle dot grid overlay */
+        .resume-db-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+        }
+
+        /* Light arc decoration */
+        .resume-db-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            pointer-events: none;
+        }
+
+        .resume-db-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .resume-db-hero>.container>p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 32px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            position: relative;
+        }
+
+        /* "Powered by" badge */
+        .powered-badge {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .verified-banner {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 14px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-radius: 12px;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            text-align: left;
+            position: relative;
+        }
+
+        .verified-banner h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: white;
+        }
+
+        .verified-banner p {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.75);
+            margin: 0;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        /* ============ App Card — White Professional ============ */
+        .app-card {
+            background: var(--pro-white);
+            color: var(--pro-text);
+            max-width: 520px;
+            margin: 0 auto;
+            text-align: left;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--pro-shadow-lg);
+            position: relative;
+        }
+
+        .user-header {
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--pro-border);
+        }
+
+        .user-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--pro-text);
+        }
+
+        .user-header p {
+            color: var(--pro-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .upload-box {
+            border: 2px dashed #c7d7f0;
+            border-radius: 16px;
+            padding: 40px 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #f8fbff;
+        }
+
+        .upload-box:hover {
+            border-color: var(--pro-blue);
+            background: var(--pro-blue-light);
+        }
+
+        .upload-box p {
+            font-size: 0.75rem !important;
+            color: var(--pro-text-muted) !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            margin: 0 !important;
+        }
+
+        .upload-box svg {
+            color: var(--pro-blue);
+            opacity: 0.7;
+        }
+
+        .upload-btn {
+            background: var(--pro-blue);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(26, 66, 138, 0.3);
+        }
+
+        .upload-btn:hover {
+            background: var(--pro-blue-mid);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(26, 66, 138, 0.4);
+        }
+
+        .settings-card {
+            background: #f8fafc;
+            border: 1px solid var(--pro-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--pro-text);
+            font-size: 0.9rem;
+        }
+
+        .form-label span {
+            display: block;
+            font-weight: 400;
+            color: var(--pro-text-muted);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--pro-white);
+            border: 1.5px solid var(--pro-border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--pro-text);
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-input:focus {
+            border-color: var(--pro-blue);
+            box-shadow: 0 0 0 3px rgba(26, 66, 138, 0.1);
+        }
+
+        .select-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pro-text-muted);
+            pointer-events: none;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            margin-bottom: 16px;
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--pro-blue);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        /* The inner checkmark logic */
+        .toggle-switch svg {
+            display: none;
+        }
+
+        .app-footer-btn {
+            background: var(--pro-blue);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(26, 66, 138, 0.3);
+            letter-spacing: 0.2px;
+        }
+
+        .app-footer-btn:hover {
+            background: var(--pro-blue-mid);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(26, 66, 138, 0.4);
+        }
+
+        /* ============ Corporate Careers Section ============ */
+        .corporate-careers {
+            background: linear-gradient(160deg, #f0f4f8 0%, #e8eef8 100%);
+            padding: 100px 24px;
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid #dde6f4;
+        }
+
+        /* Subtle background decoration */
+        .corporate-careers::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -80px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26, 66, 138, 0.06) 0%, transparent 65%);
+        }
+
+        .corporate-careers::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -60px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(193, 0, 0, 0.04) 0%, transparent 65%);
+        }
+
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(20px, 20px) scale(1.08);
+            }
+        }
+
+        .cc-container {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cc-eyebrow {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--pro-blue);
+            background: rgba(26, 66, 138, 0.08);
+            border: 1px solid rgba(26, 66, 138, 0.2);
+            border-radius: 30px;
+            padding: 5px 16px;
+            margin-bottom: 20px;
+        }
+
+        .cc-container h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: var(--pro-text);
+        }
+
+        .cc-container>p {
+            font-size: 1rem;
+            color: var(--pro-text-muted);
+            margin-bottom: 44px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* Clean white form card */
+        .cc-form-card {
+            background: var(--pro-white);
+            border: 1px solid #d4e0f5;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--pro-shadow-lg);
+            text-align: left;
+        }
+
+        .cc-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Input Field Row */
+        .cc-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .cc-field-icon {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 1;
+            transition: color 0.2s;
+        }
+
+        .cc-input {
+            width: 100%;
+            border: 1.5px solid var(--pro-border);
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px 16px 15px 48px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            outline: none;
+            color: var(--pro-text);
+            transition: all 0.2s ease;
+        }
+
+        .cc-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.88rem;
+        }
+
+        .cc-input:focus {
+            border-color: var(--pro-blue);
+            background: var(--pro-white);
+            box-shadow: 0 0 0 3px rgba(26, 66, 138, 0.1);
+        }
+
+        .cc-field:focus-within .cc-field-icon {
+            color: var(--pro-blue);
+        }
+
+        /* Two-column grid */
+        .cc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* Submit Button */
+        .cc-btn {
+            margin-top: 8px;
+            background: var(--pro-blue);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(26, 66, 138, 0.3);
+            width: 100%;
+        }
+
+        .cc-btn:hover {
+            background: var(--pro-blue-mid);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(26, 66, 138, 0.4);
+        }
+
+        .cc-btn:active {
+            transform: translateY(0);
+        }
+
+        .cc-form-footer {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            margin-top: 20px;
+            letter-spacing: 0.2px;
+        }
+
+        /* Divider */
+        .cc-divider {
+            height: 1px;
+            background: var(--pro-border);
+            margin: 8px 0 16px;
+        }
+
+        /* Section label inside form card */
+        .cc-section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--pro-text-muted);
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .cc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cc-form-card {
+                padding: 24px 20px;
+            }
+
+            .cc-container h2 {
+                font-size: 2rem;
+            }
+
+            .app-card {
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+
+            .resume-db-hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+      <!-- Side Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <aside class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+            <div class="drawer-profile">
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none; margin: 0; padding: 0;">
+          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name" style="font-size: 1.1rem;"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer-nav">
+      <li><a href="/" class="active"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home</a></li>
+      <li><a href="/#features"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg></span> Ecosystem</a></li>
+      <li><a href="/#cities"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Our Cities</a></li>
+      <li><a href="/#story"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Origin Story</a></li>
+      <li><a href="/news.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> News</a></li>
+      <li><a href="/upcoming.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> M-Indicator 2.0</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/resumedb.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span> ResumeDB</a></li>
+      <li><a href="/ad.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> Advertising</a></li>
+      <div class="drawer-divider"></div>
+      <li><a href="/contact.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> Contact Us</a></li>
+      <li><a href="/terms.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Privacy & Terms</a></li>
+    </ul>
+    <div class="drawer-footer">
+      <div class="drawer-socials">
+        <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X / Twitter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+          </svg>
+        </a>
+      </div>
+      <p class="drawer-copyright">&copy; 2026 Mobond App · Built for the Indian Commuter</p>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-content">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="/" class="logo text-decoration-none" style="text-decoration:none;">
+          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" fill="#C10000" />
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+            <circle cx="50" cy="50" r="7" fill="white" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+            <rect x="34" y="47" width="8" height="6" fill="white" />
+            <rect x="58" y="47" width="8" height="6" fill="white" />
+          </svg>
+          <span class="brand-name"><strong>m</strong>-Indicator</span>
+        </a>
+      </div>
+            <div class="nav-links">
+        <a href="/upcoming.html" style="color:var(--primary-blue);font-weight:700;font-size:1.05rem;">M-Indicator 2.0</a>
+        <a href="/resumedb.html" class="btn"
+          style="background-color:var(--primary-red);color:white;border-radius:30px;font-weight:700;padding:12px 28px;font-size:1.05rem;">ResumeDB</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('sideDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      const btn = document.getElementById('hamburgerBtn');
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('open');
+      btn.classList.toggle('open');
+      document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeDrawer() {
+      document.getElementById('sideDrawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+      document.getElementById('hamburgerBtn').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  </script>
+
+    <main class="career-main">
+
+        <!-- User Facing: ResumeDB section -->
+        <section class="resume-db-hero">
+            <div class="container reveal">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                    style="margin-bottom: 24px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+
+                <div
+                    style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.8); text-transform: uppercase;">Powered
+                        by</span>
+                    <span
+                        style="font-size: 0.85rem; font-weight: 800; color: white; background: #C10000; padding: 2px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">m-indicator</span>
+                </div>
+
+                <h1 style="color: white;">ResumeDB</h1>
+                <p>Get discovered by top employers</p>
+
+                <div class="verified-banner">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="flex-shrink: 0; margin-top:2px;">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <div>
+                        <h2>Verified by m-indicator</h2>
+                        <p>Your profile will be visible to trusted employers on the m-indicator network.</p>
+                    </div>
+                </div>
+
+                <div class="app-card">
+                    <div class="user-header">
+                        <h2>John Doe</h2>
+                        <p>johndoe@example.com</p>
+                    </div>
+
+                    <div class="upload-box">
+                        <p
+                            style="font-size: 0.75rem; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                            PDF, DOC, DOCX. Max 5MB</p>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <button class="upload-btn">Upload Resume</button>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="toggle-row">
+                            <div class="form-label" style="margin-bottom:0;">
+                                Currently Looking for Job
+                                <span>Allow recruiters to find your resume</span>
+                            </div>
+                            <!-- The JS onclick handles toggling the .active class visually -->
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Current Monthly Salary Range</label>
+                            <div class="form-input-wrapper">
+                                <select class="form-input">
+                                    <option>--select--</option>
+                                    <option>Below ₹15,000</option>
+                                    <option>₹15,000 - ₹30,000</option>
+                                    <option>₹30,000 - ₹50,000</option>
+                                    <option>Above ₹50,000</option>
+                                </select>
+                                <svg class="select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Home Pincode</label>
+                            <input type="text" class="form-input" placeholder="Enter your pincode">
+                        </div>
+
+                        <div class="toggle-row" style="margin-bottom: 0;">
+                            <div class="form-label" style="margin-bottom:0;">
+                                Jobs Nearby Home Only
+                                <span>(within 5km radius)</span>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: flex; justify-content: center; gap: 24px; font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.6); margin-bottom: 24px;">
+                        <a href="#"
+                            style="color: inherit; text-decoration: none; padding-right: 24px; border-right: 1px solid rgba(255,255,255,0.2);">Delete
+                            Account</a>
+                        <a href="/terms.html" style="color: inherit; text-decoration: none;">Terms & Conditions</a>
+                    </div>
+
+                    <button class="app-footer-btn">Save Changes</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Corporate Careers Section -->
+        <section class="corporate-careers">
+            <div class="cc-container reveal">
+                <div class="cc-eyebrow">🏢 Join the Team</div>
+                <h2>Work at Mobond</h2>
+                <p>Join the team that simplifies transit for millions of commuters every day. Drop your details and
+                    we'll be in touch.</p>
+
+                <div class="cc-form-card">
+                    <form class="cc-form" onsubmit="handleApply(event)">
+
+                        <div class="cc-grid">
+                            <div class="cc-field">
+                                <svg class="cc-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <input type="text" class="cc-input" placeholder="Full Name" required>
+                            </div>
+                            <div class="cc-field">
+                                <svg class="cc-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <input type="email" class="cc-input" placeholder="Email Address" required>
+                            </div>
+                        </div>
+
+                        <div class="cc-field">
+                            <svg class="cc-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.29h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 5.91 5.91l.83-.83a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16.92z">
+                                </path>
+                            </svg>
+                            <input type="tel" class="cc-input" placeholder="Mobile Number" required>
+                        </div>
+
+                        <div class="cc-field">
+                            <svg class="cc-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                            <input type="text" class="cc-input" placeholder="Experience (e.g. 2 Years Android Dev)"
+                                required>
+                        </div>
+
+                        <div class="cc-field">
+                            <svg class="cc-field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            <input type="text" class="cc-input" placeholder="Role You're Applying For" required>
+                        </div>
+
+                        <button type="submit" class="cc-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            Send Application
+                        </button>
+                    </form>
+                    <div class="cc-form-footer">We typically respond within 2–3 business days · careers@mobond.com
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const reveals = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15 });
+            reveals.forEach(reveal => revealObserver.observe(reveal));
+        });
+
+        function handleApply(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('.cc-btn');
+            btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Application Sent!`;
+            btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+            btn.style.boxShadow = '0 8px 32px rgba(34, 197, 94, 0.4)';
+            btn.disabled = true;
+            setTimeout(() => {
+                e.target.reset();
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Send Application`;
+                btn.style.background = '';
+                btn.style.boxShadow = '';
+                btn.disabled = false;
+            }, 4000);
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer style="margin-top: 0;">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo" style="text-decoration: none;">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#C10000" />
+                        <circle cx="50" cy="50" r="26" fill="white" />
+                        <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+                        <circle cx="50" cy="50" r="7" fill="white" />
+                        <path d="M18 50L30 40V60L18 50Z" fill="white" />
+                        <path d="M82 50L70 40V60L82 50Z" fill="white" />
+                        <rect x="34" y="47" width="8" height="6" fill="white" />
+                        <rect x="58" y="47" width="8" height="6" fill="white" />
+                    </svg>
+                    <span class="brand-name text-white"><strong>m</strong>-Indicator</span>
+                </a>
+                <p class="mt-2 text-light">Built for the Indian Commuter.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <a href="/#about">About Us</a>
+                    <a href="/contact.html">Contact Us</a>
+                    <a href="/resumedb.html" style="font-weight: 700; color: var(--primary-red);">ResumeDB</a>
+                    <a href="/ad.html" style="font-weight: 600; color: var(--primary-blue);">Advertise with Us</a>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <a href="/terms.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                </div>
+                <div class="link-group">
+                    <h4>Connect</h4>
+                    <div style="display: flex; gap: 16px;">
+                        <a href="https://x.com/m_indicator_app?s=20" target="_blank"
+                            style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank"
+                            style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Mobond App. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

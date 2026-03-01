@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found — m-Indicator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7f9fc;
+            color: #1a202c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .logo-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #C10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(193, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 6rem;
+            font-weight: 800;
+            color: #C10000;
+            line-height: 1;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 12px 0 8px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #718096;
+            max-width: 400px;
+            margin: 0 auto 32px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #1A428A;
+            color: white;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 66, 138, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-ring">
+        <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="26" fill="white" />
+            <rect x="0" y="38" width="100" height="24" rx="4" fill="white" opacity="0.3" />
+            <circle cx="50" cy="50" r="7" fill="#C10000" />
+            <path d="M18 50L30 40V60L18 50Z" fill="white" />
+            <path d="M82 50L70 40V60L82 50Z" fill="white" />
+        </svg>
+    </div>
+    <h1>404</h1>
+    <h2>Page Not Found</h2>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <a href="/" class="btn">← Go Back Home</a>
+</body>
+
+</html>

@@ -1,0 +1,1729 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upcoming Features - M-Indicator 2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+        /* Specific styles for Upcoming Features page */
+        .upcoming-main {
+            margin-top: 76px;
+            overflow-x: hidden;
+            background: #fafafa;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .upcoming-hero {
+            background: linear-gradient(135deg, rgba(255, 240, 240, 0.8) 0%, rgba(240, 245, 255, 0.8) 50%, rgba(255, 255, 240, 0.8) 100%);
+            padding: 120px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .upcoming-hero h1 {
+            font-size: 3.5rem;
+            color: var(--primary-blue);
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .upcoming-hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+
+        .btn-explore {
+            background: white;
+            color: var(--primary-blue);
+            padding: 16px 32px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(26, 66, 138, 0.1);
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-explore:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 66, 138, 0.15);
+            border-color: rgba(26, 66, 138, 0.2);
+        }
+
+        /* Section Layouts */
+        .up-section {
+            padding: 100px 24px;
+        }
+
+        .up-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 64px;
+        }
+
+        .up-container.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .up-text {
+            flex: 1;
+        }
+
+        .up-text h2 {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            font-weight: 800;
+        }
+
+        .up-text p {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .up-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .mockup-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        /* Section 1: Coach */
+        .bullet-list {
+            margin-top: 24px;
+        }
+
+        .bullet-list li {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.5s ease;
+        }
+
+        .reveal.active .bullet-list li:nth-child(1) {
+            transition-delay: 0.3s;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal.active .bullet-list li:nth-child(2) {
+            transition-delay: 0.5s;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal.active .bullet-list li:nth-child(3) {
+            transition-delay: 0.7s;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .coach-mockup {
+            height: 260px;
+            background: linear-gradient(180deg, #d9e2ec 0%, #bccCDC 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 8px solid #4a5568;
+            /* track representation */
+        }
+
+        .train-body {
+            width: max-content;
+            height: 100px;
+            background: transparent;
+            position: absolute;
+            bottom: 24px;
+            left: 100%;
+            /* Start off-screen right */
+            display: flex;
+            gap: 12px;
+            padding: 0 12px;
+            transition: left 3s cubic-bezier(0.25, 1, 0.5, 1);
+            align-items: flex-end;
+        }
+
+        .reveal.active .train-body {
+            left: -240px;
+            /* Slide in to frame Coach 4 */
+        }
+
+        .coach-box {
+            width: 160px;
+            height: 90px;
+            background: linear-gradient(180deg,
+                    #f1f3f5 0%,
+                    #e9ecef 55%,
+                    #9b108e 55%,
+                    #9b108e 100%);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: none;
+        }
+
+        /* Train Connector */
+        .coach-box::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 30px;
+            background: #495057;
+            left: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: -1;
+            border-radius: 2px;
+        }
+
+        .coach-box:first-child::before {
+            display: none;
+        }
+
+        /* Realistic Train Door */
+        .train-door {
+            width: 26px;
+            height: 60px;
+            background: linear-gradient(90deg, #adb5bd 0%, #ced4da 50%, #adb5bd 100%);
+            border: 1px solid #868e96;
+            margin-top: 10px;
+            position: relative;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Door Window */
+        .train-door::after {
+            content: '';
+            width: 10px;
+            height: 16px;
+            background: #212529;
+            margin-top: 6px;
+            border-radius: 2px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Coach Window */
+        .train-window {
+            width: 20px;
+            height: 24px;
+            background: #212529;
+            border-radius: 2px;
+            position: absolute;
+            top: 24px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ced4da;
+        }
+
+        /* Stripe Patterns matching real EMU Local Trains */
+        .coach-stripe {
+            position: absolute;
+            top: 4px;
+            /* Near the roof */
+            left: 0;
+            width: 100%;
+            height: 8px;
+            opacity: 0.9;
+        }
+
+        .stripe-fc {
+            background: repeating-linear-gradient(45deg, #c92a2a, #c92a2a 8px, #fcc419 8px, #fcc419 16px);
+        }
+
+        .stripe-ladies {
+            background: repeating-linear-gradient(45deg, #2b8a3e, #2b8a3e 8px, #fcc419 8px, #fcc419 16px);
+        }
+
+        .stripe-div {
+            background: #fcc419;
+            /* Solid yellow for handicapped */
+            height: 6px;
+            width: 40px;
+            /* Small yellow patch often above door */
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+        }
+
+        /* Floating Coach Labels */
+        .coach-label {
+            position: absolute;
+            background: white;
+            color: #1a202c;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 4px;
+            top: -36px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .coach-box:hover .coach-label {
+            opacity: 1;
+        }
+
+        /* Crowd Indicator Line */
+        .crowd-indicator {
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 4px;
+            border-radius: 2px;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .crowd-high {
+            color: #e03131;
+            background: #e03131;
+        }
+
+        .crowd-med {
+            color: #f59f00;
+            background: #f59f00;
+        }
+
+        .crowd-low {
+            color: #2f9e44;
+            background: #2f9e44;
+        }
+
+        /* The Recommended Coach Animation */
+        .reveal.active .coach-box.recommended {
+            transform: scale(1.15) translateY(-10px);
+            box-shadow: 0 15px 30px rgba(47, 158, 68, 0.4);
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        .reveal.active .coach-box.recommended .coach-label {
+            background: #2f9e44;
+            color: white;
+            opacity: 1;
+            transform: scale(1.1);
+            transition-delay: 2.8s;
+            box-shadow: 0 4px 12px rgba(47, 158, 68, 0.4);
+        }
+
+        /* Wheels */
+        .train-wheels {
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            width: 24px;
+            height: 10px;
+            background: #212529;
+            border-radius: 5px;
+        }
+
+        .train-wheels.right {
+            left: auto;
+            right: 20px;
+        }
+
+        /* Section 2: Voice */
+        .bg-light-blue {
+            background: #eef2f6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waveform {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(26, 66, 138, 0.03) 0%, transparent 60%);
+            animation: pulseWave 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseWave {
+            0% {
+                transform: scale(0.8);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        .chat-bubble {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 16px;
+            width: 80%;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+        }
+
+        .chat-bubble.user {
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-bubble.bot {
+            border-bottom-right-radius: 4px;
+            background: var(--primary-blue);
+            color: white;
+            margin-left: auto;
+        }
+
+        .reveal.active .chat-user {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.3s;
+        }
+
+        .reveal.active .chat-bot {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 1.0s;
+        }
+
+        /* Section 3: Wrapped */
+        .wrapped-section {
+            background: linear-gradient(135deg, #1A428A, #2b5ab5);
+            color: white;
+            text-align: center;
+        }
+
+        .wrapped-section h2 {
+            color: white;
+        }
+
+        .wrapped-cards {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 48px;
+        }
+
+        .w-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            flex: 1;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .reveal.active .w-card {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal.active .w-card:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+
+        .reveal.active .w-card:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+
+        .reveal.active .w-card:nth-child(3) {
+            transition-delay: 0.6s;
+        }
+
+        /* Section 4: Guardian */
+        .guardian-glow {
+            width: 120px;
+            height: 120px;
+            background: rgba(245, 166, 35, 0.2);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: shieldGlow 3s infinite alternate;
+        }
+
+        @keyframes shieldGlow {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Section 5: Habit */
+        .habit-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Section 6: Map */
+        .map-mockup {
+            width: 100%;
+            height: 240px;
+            background: #e9ecef url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0,50 L100,50 M50,0 L50,100" stroke="%23dee2e6" stroke-width="1"/></svg>') calc(50% - 50px) calc(50% - 50px);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-pin {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal.active .pin-1 {
+            top: 30%;
+            left: 30%;
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.3s;
+        }
+
+        .reveal.active .pin-2 {
+            top: 60%;
+            left: 70%;
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.8s;
+        }
+
+        .map-route {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s 1.2s;
+        }
+
+        .reveal.active .map-route {
+            opacity: 1;
+        }
+
+        /* Final Section */
+        .final-section {
+            background: linear-gradient(180deg, #fafafa 0%, #eef2f6 100%);
+            text-align: center;
+            padding: 120px 24px;
+        }
+
+        .h-icons {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin: 64px 0;
+        }
+
+        .h-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active .h-icon:nth-child(1) {
+            transition-delay: 0.2s;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal.active .h-icon:nth-child(2) {
+            transition-delay: 0.4s;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal.active .h-icon:nth-child(3) {
+            transition-delay: 0.6s;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .h-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+
+            .up-container.reverse,
+            .up-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .bullet-list li {
+                justify-content: center;
+            }
+
+            .upcoming-hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <!-- Side Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <aside class="side-drawer" id="sideDrawer">
+        <div class="drawer-header">
+            <div class="drawer-profile">
+                <a href="/" class="logo text-decoration-none" style="text-decoration:none; margin: 0; padding: 0;">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#C10000" />
+                        <circle cx="50" cy="50" r="26" fill="white" />
+                        <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+                        <circle cx="50" cy="50" r="7" fill="white" />
+                        <path d="M18 50L30 40V60L18 50Z" fill="white" />
+                        <path d="M82 50L70 40V60L82 50Z" fill="white" />
+                        <rect x="34" y="47" width="8" height="6" fill="white" />
+                        <rect x="58" y="47" width="8" height="6" fill="white" />
+                    </svg>
+                    <span class="brand-name" style="font-size: 1.1rem;"><strong>m</strong>-Indicator</span>
+                </a>
+            </div>
+            <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <ul class="drawer-nav">
+            <li><a href="/" class="active"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg></span> Home</a></li>
+            <li><a href="/#features"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="9" height="9" rx="1" />
+                            <rect x="13" y="2" width="9" height="9" rx="1" />
+                            <rect x="2" y="13" width="9" height="9" rx="1" />
+                            <rect x="13" y="13" width="9" height="9" rx="1" />
+                        </svg></span> Ecosystem</a></li>
+            <li><a href="/#cities"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg></span> Our Cities</a></li>
+            <li><a href="/#story"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                        </svg></span> Origin Story</a></li>
+            <li><a href="/news.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg></span> News</a></li>
+            <li><a href="/upcoming.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg></span> M-Indicator 2.0</a></li>
+            <div class="drawer-divider"></div>
+            <li><a href="/resumedb.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" />
+                            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+                            <line x1="12" y1="12" x2="12" y2="16" />
+                            <line x1="10" y1="14" x2="14" y2="14" />
+                        </svg></span> ResumeDB</a></li>
+            <li><a href="/ad.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg></span> Advertising</a></li>
+            <div class="drawer-divider"></div>
+            <li><a href="/contact.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22 6 12 13 2 6" />
+                        </svg></span> Contact Us</a></li>
+            <li><a href="/terms.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg></span> Privacy & Terms</a></li>
+        </ul>
+        <div class="drawer-footer">
+            <div class="drawer-socials">
+                <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X / Twitter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                    </svg>
+                </a>
+                <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                    </svg>
+                </a>
+            </div>
+            <p class="drawer-copyright">&copy; 2026 Mobond App · Built for the Indian Commuter</p>
+        </div>
+    </aside>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <a href="/" class="logo text-decoration-none" style="text-decoration:none;">
+                    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#C10000" />
+                        <circle cx="50" cy="50" r="26" fill="white" />
+                        <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+                        <circle cx="50" cy="50" r="7" fill="white" />
+                        <path d="M18 50L30 40V60L18 50Z" fill="white" />
+                        <path d="M82 50L70 40V60L82 50Z" fill="white" />
+                        <rect x="34" y="47" width="8" height="6" fill="white" />
+                        <rect x="58" y="47" width="8" height="6" fill="white" />
+                    </svg>
+                    <span class="brand-name"><strong>m</strong>-Indicator</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/upcoming.html"
+                    style="color:var(--primary-blue);font-weight:700;font-size:1.05rem;">M-Indicator 2.0</a>
+                <a href="/resumedb.html" class="btn"
+                    style="background-color:var(--primary-red);color:white;border-radius:30px;font-weight:700;padding:12px 28px;font-size:1.05rem;">ResumeDB</a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            const btn = document.getElementById('hamburgerBtn');
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+            btn.classList.toggle('open');
+            document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+        }
+        function closeDrawer() {
+            document.getElementById('sideDrawer').classList.remove('open');
+            document.getElementById('drawerOverlay').classList.remove('open');
+            document.getElementById('hamburgerBtn').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+    </script>
+
+    <main class="upcoming-main">
+        <!-- Hero Section -->
+        <section class="upcoming-hero">
+            <div class="container reveal">
+                <div
+                    style="text-transform: uppercase; font-weight: 800; color: var(--primary-red); letter-spacing: 3px; margin-bottom: 24px; font-size: 1rem; border: 1px solid rgba(193,0,0,0.2); display: inline-block; padding: 6px 16px; border-radius: 20px; background: rgba(193,0,0,0.05);">
+                    M-Indicator 2.0
+                </div>
+                <!-- Highlighted main keywords -->
+                <h1>From Static Timetables to <br><span
+                        style="background: linear-gradient(120deg, var(--primary-red), #ff4d4d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Predictive
+                        Intelligence</span></h1>
+                <p style="font-size: 1.4rem; max-width: 700px; color: #4a5568; line-height: 1.6;">
+                    The next evolution of Mumbai's commuting brain. Not just <i style="opacity:0.8;">"Here is your
+                        train"</i>, but <strong style="color:var(--primary-blue);">"Here is what will happen if you take
+                        this train."</strong>
+                </p>
+                <div style="margin-top: 32px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <a href="#explore" class="btn-explore"
+                        style="background: var(--primary-blue); color: white; border: none;">Explore The Evolution</a>
+                </div>
+
+                <div
+                    style="margin-top: 80px; max-width: 800px; margin-left: auto; margin-right: auto; position: relative;">
+                    <!-- A more dynamic grid line abstraction -->
+                    <svg width="100%" height="160" viewBox="0 0 800 160" fill="none">
+                        <defs>
+                            <linearGradient id="glow" x1="0" x2="1" y1="0" y2="0">
+                                <stop offset="0%" stop-color="rgba(26,66,138,0)" />
+                                <stop offset="50%" stop-color="rgba(26,66,138,0.5)" />
+                                <stop offset="100%" stop-color="rgba(26,66,138,0)" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Network Graph representation -->
+                        <path d="M0 80 Q 200 10 400 80 T 800 80" stroke="url(#glow)" stroke-width="3" fill="none"
+                            class="pulse-path" />
+                        <path d="M0 120 Q 200 180 400 120 T 800 120" stroke="rgba(193,0,0,0.2)" stroke-width="2"
+                            fill="none" stroke-dasharray="10 5" class="slide-path" />
+
+                        <!-- Nodes -->
+                        <circle cx="150" cy="50" r="6" fill="#1A428A" class="pulse-node" style="animation-delay: 0s;" />
+                        <circle cx="450" cy="75" r="8" fill="#C10000" class="pulse-node"
+                            style="animation-delay: 0.5s;" />
+                        <circle cx="650" cy="100" r="5" fill="#1A428A" class="pulse-node"
+                            style="animation-delay: 1s;" />
+                        <circle cx="300" cy="140" r="6" fill="#1A428A" class="pulse-node"
+                            style="animation-delay: 1.5s;" />
+
+                        <!-- Connections connecting nodes to graph -->
+                        <line x1="150" y1="50" x2="300" y2="140" stroke="rgba(26,66,138,0.2)" stroke-width="1" />
+                        <line x1="300" y1="140" x2="450" y2="75" stroke="rgba(26,66,138,0.2)" stroke-width="1" />
+                        <line x1="450" y1="75" x2="650" y2="100" stroke="rgba(193,0,0,0.2)" stroke-width="1" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- TITLE: INTELLIGENT COMMUTING -->
+        <div class="container" style="text-align: center; margin-top: 64px; margin-bottom: -40px;">
+            <div
+                style="display:inline-block; background: #e6f0ff; color: #1A428A; padding: 8px 16px; border-radius: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                Core Pillar 1: Intelligent Commuting</div>
+        </div>
+
+        <!-- FEATURE: AI Commute Copilot -->
+        <section id="explore" class="up-section">
+            <div class="container up-container reveal">
+                <div class="up-text">
+                    <h2>AI Commute Copilot</h2>
+                    <p>Stop searching. Start asking. A natural language assistant that understands complex queries and
+                        gives predictive answers.</p>
+                    <div class="chat-bubble chat-user user"
+                        style="transform:none; opacity:1; border: 1px solid #ddd; background: #fafafa; margin-bottom: 24px; box-shadow: none;">
+                        <span style="font-size:0.8rem; font-weight:700; color:#555;">You:</span> "I need to reach
+                        Andheri by 9:15 but avoid heavy crowd."
+                    </div>
+                    <ul class="bullet-list" style="list-style: none; padding: 0;">
+                        <li><span style="color: var(--primary-blue);">✓</span> Predicted crowd levels (Low/Med/High)
+                        </li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Precise delay probability scoring</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Time-risk tradeoff analysis</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Voice-enabled commuter queries</li>
+                    </ul>
+                </div>
+                <div class="up-visual">
+                    <!-- Updated visual for Copilot -->
+                    <div class="mockup-card"
+                        style="background: linear-gradient(180deg, #1A428A 0%, #0d285a 100%); color: white;">
+                        <div
+                            style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;">
+                            <div class="h-icon-circle"
+                                style="background:rgba(255,255,255,0.2); color:white; border-color:transparent;"><svg
+                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg></div>
+                            <div style="font-weight:600;">M-Indicator AI Assistant</div>
+                        </div>
+                        <div class="chat-bubble chat-bot bot"
+                            style="background: rgba(255,255,255,0.1); width: 100%; transform: none; box-shadow: none; border: 1px solid rgba(255,255,255,0.1);">
+                            <div>Take the <strong style="color:#63b3ed;">8:32 PM Slow</strong> from Borivali.</div>
+                            <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div
+                                    style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-size: 0.85rem;">
+                                    Delay Risk <br><span style="font-weight:800; color: #48bb78; font-size: 1.1rem;">Low
+                                        (12%)</span>
+                                </div>
+                                <div
+                                    style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-size: 0.85rem;">
+                                    Expected Crowd <br><span
+                                        style="font-weight:800; color: #f6e05e; font-size: 1.1rem;">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURE: Crowd Intelligence Heatmap & Smart Coach -->
+        <section class="up-section bg-light-blue">
+            <div class="container up-container reverse reveal">
+                <div class="up-text">
+                    <h2>Smart Coach & Crowd Intelligence</h2>
+                    <p>Take the guesswork out of boarding. M-Indicator predicts compartment-level density and guides you
+                        to the best physical location on the platform.</p>
+                    <ul class="bullet-list" style="list-style: none; padding: 0;">
+                        <li><span style="color: var(--primary-blue);">✓</span> Suggests best coach position for fastest
+                            exit (stairs/bridge)</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Live compartment crowd probability
+                            heatmap</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Tap-in user reporting network</li>
+                    </ul>
+                </div>
+                <div class="up-visual">
+                    <div class="mockup-card">
+                        <div class="coach-mockup">
+                            <div class="train-body">
+
+                                <!-- Coach 1: Gen + Divyang (Yellow) -->
+                                <div class="coach-box" title="1: General / Divyang">
+                                    <div class="coach-stripe stripe-div"></div>
+                                    <div class="coach-label">Gen / Divyangjan</div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-window" style="right:12px;"></div>
+                                    <div class="crowd-indicator crowd-high"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 2: Ladies (Green/Yellow) -->
+                                <div class="coach-box" title="2: Ladies Second">
+                                    <div class="coach-stripe stripe-ladies"></div>
+                                    <div class="coach-label">Ladies (II)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-med"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 3: Gen -->
+                                <div class="coach-box" title="3: General Second">
+                                    <div class="coach-label">General (II)</div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-window" style="right:12px;"></div>
+                                    <div class="crowd-indicator crowd-high"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 4: First Class (Red/Yellow) [Recommended] -->
+                                <div class="coach-box recommended" title="4: First Class (Recommended)">
+                                    <div class="coach-stripe stripe-fc"></div>
+                                    <div class="coach-label">★ First Class (I)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-low"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 5: Ladies (Green/Yellow) -->
+                                <div class="coach-box" title="5: Ladies Second">
+                                    <div class="coach-stripe stripe-ladies"></div>
+                                    <div class="coach-label">Ladies (II)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-med"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 6: Luggage (Grey doors / Wider) -->
+                                <div class="coach-box" title="6: Luggage">
+                                    <div class="coach-label">Luggage (LUG)</div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <!-- wider doors for luggage -->
+                                    <div class="train-door" style="width: 36px;"></div>
+                                    <div class="train-door" style="width: 36px;"></div>
+                                    <div class="train-window" style="right:12px;"></div>
+                                    <div class="crowd-indicator crowd-low"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 7: Gen -->
+                                <div class="coach-box" title="7: General Second">
+                                    <div class="coach-label">General (II)</div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-window" style="right:12px;"></div>
+                                    <div class="crowd-indicator crowd-high"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 8: Ladies First Class (Red/Yellow) -->
+                                <div class="coach-box" title="8: Ladies First Class">
+                                    <div class="coach-stripe stripe-fc"></div>
+                                    <div class="coach-label">Ladies First (I)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-med"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 9: Luggage -->
+                                <div class="coach-box" title="9: Luggage">
+                                    <div class="coach-label">Luggage (LUG)</div>
+                                    <div class="train-door" style="width: 36px;"></div>
+                                    <div class="train-door" style="width: 36px;"></div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <div class="crowd-indicator crowd-high"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 10: Gen -->
+                                <div class="coach-box" title="10: General Second">
+                                    <div class="coach-label">General (II)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-med"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 11: First Class -->
+                                <div class="coach-box" title="11: First Class">
+                                    <div class="coach-stripe stripe-fc"></div>
+                                    <div class="coach-label">First Class (I)</div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="crowd-indicator crowd-high"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                                <!-- Coach 12: Gen -->
+                                <div class="coach-box" title="12: General Second">
+                                    <div class="coach-label">General (II)</div>
+                                    <div class="train-window" style="left:12px;"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-door"></div>
+                                    <div class="train-window" style="right:12px;"></div>
+                                    <div class="crowd-indicator crowd-med"></div>
+                                    <div class="train-wheels"></div>
+                                    <div class="train-wheels right"></div>
+                                </div>
+
+                            </div>
+                            <div
+                                style="position: absolute; bottom: 16px; left: 16px; background: rgba(255,255,255,0.9); padding: 8px 16px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14"></path>
+                                    <path d="M12 5l7 7-7 7"></path>
+                                </svg>
+                                Escapator / Bridge Alignment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURE: Smart Route Rerouting (Simulation Graph) -->
+        <section class="up-section">
+            <div class="container up-container reveal">
+                <div class="up-text">
+                    <h2>Smart Disruption Engine</h2>
+                    <p>When a mega block happens, don't just stare at a static notification. M-Indicator will
+                        recalculate the network instantly.</p>
+                    <ul class="bullet-list" style="list-style: none; padding: 0;">
+                        <li><span style="color: var(--primary-blue);">✓</span> Dynamic alternate route calculation
+                            (Dijkstra algorithm)</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Clear time penalty estimates</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> Mumbai Commute Digital Twin simulation
+                            layer</li>
+                    </ul>
+                </div>
+                <div class="up-visual">
+                    <div class="mockup-card" style="padding: 24px; position:relative;">
+                        <div
+                            style="background: #FFF5F5; border: 1px solid #FEB2B2; padding: 12px; border-radius: 8px; margin-bottom: 16px; display:flex; gap:12px; align-items:flex-start;">
+                            <div style="color: #C10000; margin-top: 2px;">⚠️</div>
+                            <div>
+                                <strong style="color: #C10000; font-size:0.95rem;">MEGA BLOCK: Matunga - Mulund FAST
+                                    Line</strong>
+                            </div>
+                        </div>
+                        <div style="border-left: 3px solid #E2E8F0; padding-left: 20px; position: relative;">
+                            <div
+                                style="position:absolute; width:12px; height:12px; background:var(--primary-blue); border-radius:50%; left:-7.5px; top:0;">
+                            </div>
+                            <h4 style="margin:0; font-size:1rem;">Dadar</h4>
+                            <p style="font-size:0.85rem; color:var(--text-light); margin:4px 0 16px 0;">Board Slow Train
+                                (20m penalty)</p>
+
+                            <div
+                                style="position:absolute; width:12px; height:12px; background:#48BB78; border-radius:50%; left:-7.5px; top:65px;">
+                            </div>
+                            <h4 style="margin:0; font-size:1rem; margin-top:24px;">Kurla Transfer</h4>
+                            <p style="font-size:0.85rem; color:var(--text-light); margin:4px 0 0 0;">Switch to Platform
+                                1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TITLE: SAFETY & SOCIAL -->
+        <div class="container" style="text-align: center; margin-top: 64px; margin-bottom: -40px;">
+            <div
+                style="display:inline-block; background: #ffebeb; color: #C10000; padding: 8px 16px; border-radius: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                Core Pillar 2: Safety & Social</div>
+        </div>
+
+        <!-- FEATURE: Safety Mode 2.0 & Guardian -->
+        <section class="up-section bg-light-blue" style="background: linear-gradient(to bottom, #fafafa, #fef4f4);">
+            <div class="container up-container reverse reveal">
+                <div class="up-text">
+                    <h2>Women Safety Mode 2.0 & Guardian</h2>
+                    <p>Going beyond a simple SMS alert. A totally unified safety framework designed to protect and
+                        connect.</p>
+                    <ul class="bullet-list" style="list-style: none; padding: 0;">
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Panic Mode:</strong> Auto-sends
+                            train number, coach number, live location & audio.</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Guardian Alert:</strong>
+                            Auto-notify family when boarding and reaching.</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Find My Friend:</strong> Share
+                            live travel status to meet inside crowd chaos.</li>
+                    </ul>
+                </div>
+                <div class="up-visual">
+                    <div class="guardian-glow"></div>
+                    <div class="mockup-card" style="text-align: center; position:relative; z-index:2;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#C10000" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="margin-bottom: 24px; filter: drop-shadow(0 4px 6px rgba(193,0,0,0.2));">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M12 8v4"></path>
+                            <path d="M12 16h.01"></path>
+                        </svg>
+                        <div
+                            style="background: rgba(193,0,0,0.1); color: #C10000; padding: 12px; border-radius: 12px; margin-top: 16px; text-align:left; font-size: 0.9rem; font-weight:600;">
+                            🚨 Emergency Protocol Triggered:<br>
+                            <span style="font-weight:400; color: #555; font-size:0.8rem;">Transmitting: Loc: 19.11,
+                                72.84 • Fast Local • Sec Coach • Rec Status: ON</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TITLE: LIFESTYLE & TOURISM -->
+        <div class="container" style="text-align: center; margin-top: 64px; margin-bottom: -40px;">
+            <div
+                style="display:inline-block; background: #edfaea; color: #2f855a; padding: 8px 16px; border-radius: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                Core Pillar 3: Lifestyle & Tourism</div>
+        </div>
+
+        <!-- FEATURE: Pointing, Tourism, Fare Estimator, Habit Learning -->
+        <section class="up-section">
+            <div class="container up-container reveal">
+                <div class="up-text">
+                    <h2>Habit Learning & Tourist Mode</h2>
+                    <p>Whether you've ridden the local for 10 years or 10 minutes, M-Indicator adapts to you.</p>
+                    <ul class="bullet-list" style="list-style: none; padding: 0;">
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Tourist Mode:</strong> Fair
+                            auto/cab charge calculators, top sights, and local train beginner guides.</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Smart Habit Learning:</strong>
+                            App remembers your usual route/time and auto-warns you of rain or blockages beforehand.</li>
+                        <li><span style="color: var(--primary-blue);">✓</span> <strong>Map Pointing Search:</strong>
+                            Just tap the map to instantly see transit combo options.</li>
+                    </ul>
+                </div>
+                <div class="up-visual">
+                    <div class="mockup-card">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; color: var(--text-light); font-weight: 600;">
+                            Pattern Recognition <span
+                                style="font-size: 0.8rem; background: #e0e6ed; padding: 4px 8px; border-radius: 12px;">Active</span>
+                        </div>
+                        <div class="habit-card"
+                            style="background:#f7fafc; padding: 16px; border-radius: 12px; border:1px solid #e2e8f0; margin-bottom:16px;">
+                            <div
+                                style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">
+                                Smart Alert</div>
+                            <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">Leave 15 minutes early
+                                for your Andheri office commute today. High delay risk predicted.</p>
+                        </div>
+                        <div class="habit-card"
+                            style="background:#f7fafc; padding: 16px; border-radius: 12px; border:1px solid #e2e8f0;">
+                            <div
+                                style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">
+                                Fare Estimator (Tourist mode)</div>
+                            <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">Colaba to Dadar:
+                                Estimated Auto Fare <b>₹140</b>. Avoid cabs over ₹250.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURE: Mumbai Wrapped -->
+        <section class="up-section" style="background: #FDF8F2; padding: 100px 0;">
+            <div class="container reveal">
+                <style>
+                    .wrap-carousel-container {
+                        max-width: 400px;
+                        margin: 0 auto;
+                        height: 700px;
+                        background: #FDF8F2;
+                        border-radius: 24px;
+                        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        position: relative;
+                        font-family: 'DM Sans', sans-serif;
+                    }
+
+                    .wrap-slide {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        padding: 32px;
+                        display: flex;
+                        flex-direction: column;
+                        opacity: 0;
+                        transform: translateY(100%);
+                        transition: all 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+                        color: #1a202c;
+                    }
+
+                    .wrap-slide.active {
+                        opacity: 1;
+                        transform: translateY(0);
+                        z-index: 2;
+                    }
+
+                    .wrap-slide.prev {
+                        opacity: 0;
+                        transform: translateY(-100%) scale(0.9);
+                    }
+
+                    .wrap-header h3 {
+                        font-family: 'Playfair Display', serif;
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        margin-bottom: 8px;
+                        line-height: 1.1;
+                    }
+
+                    .wrap-number {
+                        font-family: 'Playfair Display', serif;
+                        font-size: 4rem;
+                        font-weight: 800;
+                        margin: 24px 0;
+                        line-height: 1;
+                    }
+
+                    .wrap-nav-dots {
+                        position: absolute;
+                        top: 16px;
+                        left: 32px;
+                        right: 32px;
+                        display: flex;
+                        gap: 4px;
+                        z-index: 10;
+                    }
+
+                    .wrap-dot {
+                        flex: 1;
+                        height: 3px;
+                        background: rgba(0, 0, 0, 0.1);
+                        border-radius: 2px;
+                    }
+
+                    .wrap-dot.active {
+                        background: rgba(0, 0, 0, 0.8);
+                    }
+
+                    /* Ambient Backgrounds */
+                    .bg-intro {
+                        background: #FF6B35;
+                        color: white;
+                    }
+
+                    .bg-intro .wrap-dot {
+                        background: rgba(255, 255, 255, 0.3);
+                    }
+
+                    .bg-intro .wrap-dot.active {
+                        background: white;
+                    }
+
+                    .bg-stats {
+                        background: #FDF8F2;
+                    }
+
+                    .bg-eco {
+                        background: #2D7A4F;
+                        color: white;
+                    }
+
+                    .bg-eco .wrap-dot {
+                        background: rgba(255, 255, 255, 0.3);
+                    }
+
+                    .bg-eco .wrap-dot.active {
+                        background: white;
+                    }
+
+                    .bg-rank {
+                        background: #F4A428;
+                        color: #1a202c;
+                    }
+
+                    .wrap-nav-zones {
+                        position: absolute;
+                        inset: 0;
+                        z-index: 9;
+                        display: flex;
+                    }
+
+                    .wrap-zone {
+                        flex: 1;
+                        cursor: pointer;
+                    }
+
+                    .wrap-btn {
+                        background: #1a202c;
+                        color: white !important;
+                        text-align: center;
+                        padding: 16px;
+                        border-radius: 30px;
+                        font-weight: 700;
+                        text-decoration: none;
+                        margin-top: auto;
+                        display: block;
+                        cursor: pointer;
+                        border: none;
+                        width: 100%;
+                    }
+
+                    .bg-intro .wrap-btn,
+                    .bg-eco .wrap-btn {
+                        background: white;
+                        color: #1a202c !important;
+                    }
+
+                    /* Animations */
+                    @keyframes countUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(20px);
+                        }
+
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+
+                    .wrap-slide.active .animated-num {
+                        animation: countUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                        animation-delay: 0.3s;
+                        opacity: 0;
+                    }
+
+                    .eco-bar-container {
+                        height: 24px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 12px;
+                        overflow: hidden;
+                        margin-top: 16px;
+                    }
+
+                    .eco-bar {
+                        height: 100%;
+                        background: white;
+                        width: 0%;
+                        transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
+                    }
+
+                    .wrap-slide.active .eco-bar {
+                        width: 78%;
+                    }
+                </style>
+
+                <div style="text-align: center; margin-bottom: 48px;">
+                    <h2
+                        style="font-family: 'Playfair Display', serif; font-size: 3.5rem; color: #1a202c; margin-bottom: 16px;">
+                        Mumbai Wrapped 2025</h2>
+                    <p style="font-size: 1.25rem; color: #4a5568; max-width: 600px; margin: 0 auto;">Because choosing
+                        the local is more than a commute. It's a statement.</p>
+                </div>
+
+                <div class="wrap-carousel-container">
+                    <div class="wrap-nav-dots" id="wrapDots">
+                        <div class="wrap-dot active"></div>
+                        <div class="wrap-dot"></div>
+                        <div class="wrap-dot"></div>
+                        <div class="wrap-dot"></div>
+                    </div>
+
+                    <!-- Slide 1: Intro -->
+                    <div class="wrap-slide active bg-intro" id="slide0">
+                        <div class="wrap-header" style="margin-top: auto; margin-bottom: auto; text-align: center;">
+                            <h3 style="font-size: 4rem;">ready?</h3>
+                            <p style="font-size: 1.2rem; opacity: 0.9;">let's review your 2025 in motion.</p>
+                        </div>
+                        <button class="wrap-btn" onclick="nextWrapSlide()">Tap to begin</button>
+                    </div>
+
+                    <!-- Slide 2: Travel Numbers -->
+                    <div class="wrap-slide bg-stats" id="slide1">
+                        <div class="wrap-header" style="margin-top: 48px;">
+                            <h3>You covered serious ground this year.</h3>
+                            <p>Here are your travel stats:</p>
+                        </div>
+                        <div style="margin-top: auto; margin-bottom: auto;">
+                            <div class="animated-num" style="margin-bottom: 32px;">
+                                <div style="font-weight: 700; color: #FF6B35; letter-spacing: 1px;">TOTAL DISTANCE</div>
+                                <div class="wrap-number" style="color:#1a202c;">1,240<span
+                                        style="font-size:2rem;">km</span></div>
+                            </div>
+                            <div class="animated-num" style="animation-delay: 0.5s;">
+                                <div style="font-weight: 700; color: #2D7A4F; letter-spacing: 1px;">TOTAL TIME</div>
+                                <div class="wrap-number" style="color:#1a202c;">42<span
+                                        style="font-size:2rem;">hrs</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Eco Impact -->
+                    <div class="wrap-slide bg-eco" id="slide2">
+                        <div class="wrap-header" style="margin-top: 48px;">
+                            <h3>By not driving, you made an impact.</h3>
+                        </div>
+                        <div style="margin-top: auto; margin-bottom: auto;">
+                            <div class="animated-num">
+                                <div style="font-weight: 700; opacity: 0.8; letter-spacing: 1px;">CO₂ EMISSIONS SAVED
+                                </div>
+                                <div class="wrap-number text-white">142<span style="font-size:2rem;">kg</span></div>
+                                <p style="font-size: 1.1rem; opacity: 0.9;">That's equivalent to planting <strong
+                                        style="color:#F4A428;">7 large trees</strong> this year.</p>
+                            </div>
+
+                            <div style="margin-top: 32px;" class="animated-num">
+                                <div style="display:flex; justify-content:space-between; font-size: 0.9rem;">
+                                    <span>If you drove</span>
+                                    <span>Train impact</span>
+                                </div>
+                                <div class="eco-bar-container">
+                                    <div class="eco-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: Persona & Rank -->
+                    <div class="wrap-slide bg-rank" id="slide3">
+                        <div class="wrap-header" style="margin-top: 48px; text-align: center;">
+                            <div
+                                style="font-weight: 700; letter-spacing: 2px; text-transform:uppercase; margin-bottom: 16px; font-size:0.9rem;">
+                                Your Commuter Tier</div>
+                            <h3 style="font-size: 3rem; margin-bottom: 8px;">Platinum</h3>
+                            <p>Top 8% of Mumbai Commuters</p>
+                        </div>
+
+                        <div
+                            style="margin-top: auto; margin-bottom: auto; background: white; padding: 24px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 16px;">🏆</div>
+                            <h4 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">The Smart Rider</h4>
+                            <p style="font-size: 0.9rem; color: #718096; margin-bottom:0;">You saved ₹38,000 avoiding
+                                cabs and consistently travelled greener than your peers.</p>
+                        </div>
+
+                        <button class="wrap-btn"
+                            style="background:#1a202c; color:white!important; display:flex; align-items:center; justify-content:center; gap:8px;"
+                            onclick="alert('Exporting to Instagram Story...')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                            </svg>
+                            Share to Instagram
+                        </button>
+                    </div>
+
+                    <!-- Tap zones for navigation -->
+                    <div class="wrap-nav-zones">
+                        <div class="wrap-zone" onclick="prevWrapSlide()"></div>
+                        <div class="wrap-zone" onclick="nextWrapSlide()"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINAL SECTION -->
+        <section class="final-section reveal">
+            <div class="container">
+                <h2 style="font-size: 3.5rem; color: var(--primary-blue); margin-bottom: 16px;">This is M-Indicator 2.0.
+                </h2>
+                <p style="font-size: 1.5rem; color: var(--text-light); margin-bottom: 48px;">Not just routes. Predictive
+                    Decisions.</p>
+
+                <div class="h-icons" style="margin-bottom: 64px;">
+                    <div class="h-icon">
+                        <div class="h-icon-circle"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </svg></div>
+                        Prediction
+                    </div>
+                    <div class="h-icon">
+                        <div class="h-icon-circle"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4"></path>
+                                <path d="M12 8h.01"></path>
+                            </svg></div>
+                        Personalization
+                    </div>
+                    <div class="h-icon">
+                        <div class="h-icon-circle"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg></div>
+                        Protection
+                    </div>
+                </div>
+
+                <div
+                    style="display: inline-block; background: var(--primary-red); color: white; padding: 18px 48px; border-radius: 36px; font-weight: 800; font-size: 1.25rem; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 8px 32px rgba(193,0,0,0.3); animation: pulseBtn 2s infinite;">
+                    Coming to the Hackathon Soon
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Scroll reveal logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.2
+            });
+
+            reveals.forEach(reveal => {
+                revealObserver.observe(reveal);
+            });
+
+            // Trigger once on load for hero
+            setTimeout(() => {
+                const heroReveal = document.querySelector('.upcoming-hero .reveal');
+                if (heroReveal) heroReveal.classList.add('active');
+            }, 100);
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer style="margin-top: 0;">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo" style="text-decoration: none;">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#C10000" />
+                        <circle cx="50" cy="50" r="26" fill="white" />
+                        <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
+                        <circle cx="50" cy="50" r="7" fill="white" />
+                        <path d="M18 50L30 40V60L18 50Z" fill="white" />
+                        <path d="M82 50L70 40V60L82 50Z" fill="white" />
+                        <rect x="34" y="47" width="8" height="6" fill="white" />
+                        <rect x="58" y="47" width="8" height="6" fill="white" />
+                    </svg>
+                    <span class="brand-name text-white"><strong>m</strong>-Indicator</span>
+                </a>
+                <p class="mt-2 text-light">Built for the Indian Commuter.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="/contact.html">Contact Us</a>
+                    <a href="/resumedb.html">ResumeDB</a>
+                    <a href="/ad.html" style="font-weight: 600; color: var(--primary-blue);">Advertise with Us</a>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <a href="/terms.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                </div>
+                <div class="link-group">
+                    <h4>Connect</h4>
+                    <div style="display: flex; gap: 16px;">
+                        <a href="https://x.com/m_indicator_app?s=20" target="_blank"
+                            style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
+                            onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Mobond App. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        // Mumbai Wrapped Carousel Logic
+        let currentWrapSlide = 0;
+        const totalWrapSlides = 4;
+
+        function updateWrapState() {
+            // Update slides
+            for (let i = 0; i < totalWrapSlides; i++) {
+                const slide = document.getElementById('slide' + i);
+                if (!slide) continue;
+                slide.classList.remove('active', 'prev');
+                if (i === currentWrapSlide) {
+                    slide.classList.add('active');
+                } else if (i < currentWrapSlide) {
+                    slide.classList.add('prev');
+                }
+            }
+
+            // Update dots
+            const dotsContainer = document.getElementById('wrapDots');
+            if (dotsContainer) {
+                const dots = dotsContainer.children;
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].classList.toggle('active', i === currentWrapSlide);
+                }
+            }
+        }
+
+        // Make functions globally accessible
+        window.nextWrapSlide = function () {
+            if (currentWrapSlide < totalWrapSlides - 1) {
+                currentWrapSlide++;
+                updateWrapState();
+            }
+        };
+
+        window.prevWrapSlide = function () {
+            if (currentWrapSlide > 0) {
+                currentWrapSlide--;
+                updateWrapState();
+            }
+        };
+    </script>
+</body>
+
+</html>
