@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
 export default defineConfig({
+    // GitHub Pages serves from /M-indicator-2.0/ subdirectory
+    base: '/M-indicator-2.0/',
     // Build configuration
     build: {
         outDir: 'dist',
