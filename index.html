@@ -5,188 +5,1188 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>m-Indicator - Smart Transit App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>m-Indicator — India's #1 Transit App</title>
+  <meta name="description" content="Navigate Mumbai and Indian cities with India's most powerful transit app. Live tracking, offline timetables, metro, bus, ferry — all in one place." />
   <!-- Leaflet Maps -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @keyframes leaflet-pulse {
-
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 0.6;
-      }
-
-      50% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
+    /* ======= ROOT VARIABLES ======= */
+    :root {
+      --navy: #0D3980;
+      --navy-dark: #081F4A;
+      --navy-light: #1A428A;
+      --red: #D50100;
+      --red-hover: #B30000;
+      --red-light: rgba(213,1,0,0.15);
+      --white: #FFFFFF;
+      --off-white: #F5F7FA;
+      --text-muted: #8B9CB8;
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.12);
+      --card-bg: rgba(13,57,128,0.4);
+      --transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
     }
 
+    /* ======= RESET ======= */
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--navy-dark);
+      color: var(--white);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    body.no-scroll { overflow: hidden; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; }
+
+    /* ======= SCROLLBAR ======= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+    /* ======= LAYOUT ======= */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* ======= INTRO OVERLAY ======= */
+    #intro-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--navy-dark);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #intro-overlay.hidden { opacity: 0; visibility: hidden; }
+    .intro-logo-container {
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      animation: introPop 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes introPop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .intro-logo-container img {
+      width: 140px; height: 140px; border-radius: 28px;
+      box-shadow: 0 0 80px rgba(213,1,0,0.5), 0 0 160px rgba(13,57,128,0.4);
+    }
+    .intro-logo-container .intro-name {
+      font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, #8B9CB8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-logo-container .intro-name span { color: var(--red); -webkit-text-fill-color: var(--red); }
+    .intro-loader {
+      width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
+    }
+    .intro-loader-bar {
+      height: 100%; width: 0; background: linear-gradient(90deg, var(--red), var(--navy-light));
+      border-radius: 2px;
+      animation: introLoad 1.8s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes introLoad { to { width: 100%; } }
+
+    /* ======= NAVBAR ======= */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0 24px;
+      transition: var(--transition);
+    }
+    .navbar.scrolled {
+      background: rgba(8,31,74,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+    }
+    .nav-content {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 80px;
+    }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .logo-link { display: flex; align-items: center; gap: 12px; }
+    .logo-img { width: 40px; height: 40px; border-radius: 10px; }
+    .brand { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+    .brand span { color: var(--red); }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      font-weight: 500; font-size: 0.95rem; color: rgba(255,255,255,0.7);
+      transition: color 0.2s; position: relative; padding-bottom: 2px;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--red); border-radius: 1px; transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: white; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--red); color: white; padding: 10px 24px;
+      border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+      transition: var(--transition); display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(213,1,0,0.35);
+    }
+    .nav-cta:hover { background: var(--red-hover); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(213,1,0,0.5); }
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 8px; border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .nav-hamburger:hover { background: var(--glass); }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: white; border-radius: 2px; transition: all 0.3s ease;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ======= SIDE DRAWER ======= */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 1998; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .side-drawer {
+      position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+      background: linear-gradient(180deg, #0D1F40 0%, #081020 100%);
+      z-index: 1999; transition: left 0.35s cubic-bezier(0.4,0,0.2,1);
+      border-right: 1px solid var(--glass-border);
+      display: flex; flex-direction: column; overflow-y: auto;
+      padding-bottom: 24px;
+    }
+    .side-drawer.open { left: 0; }
+    .drawer-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 20px 20px; border-bottom: 1px solid var(--glass-border);
+    }
+    .drawer-close {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      color: white; width: 36px; height: 36px; border-radius: 10px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .drawer-close:hover { background: var(--red); }
+    .drawer-nav { list-style: none; padding: 16px 12px; flex: 1; }
+    .drawer-nav li { margin-bottom: 4px; }
+    .drawer-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 12px;
+      color: rgba(255,255,255,0.75); font-weight: 500; font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    .drawer-nav a:hover, .drawer-nav a.active {
+      background: var(--glass); color: white;
+    }
+    .drawer-nav .d-icon { opacity: 0.7; flex-shrink: 0; }
+    .drawer-divider { height: 1px; background: var(--glass-border); margin: 12px 16px; }
+    .drawer-footer { padding: 16px 20px; border-top: 1px solid var(--glass-border); }
+    .drawer-socials { display: flex; gap: 16px; margin-bottom: 12px; }
+    .drawer-socials a { color: rgba(255,255,255,0.5); transition: color 0.2s; }
+    .drawer-socials a:hover { color: var(--red); }
+    .drawer-copyright { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+
+    /* ======= HERO SECTION ======= */
+    .hero {
+      min-height: 100vh;
+      background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(213,1,0,0.2) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 60% at 80% 50%, rgba(13,57,128,0.6) 0%, transparent 60%),
+                  linear-gradient(180deg, #081F4A 0%, #060F24 100%);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 80px 24px 40px;
+    }
+
+    /* Animated grid lines */
+    .hero-grid {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .hero-grid svg {
+      position: absolute; width: 100%; height: 100%;
+      opacity: 0.12;
+    }
+
+    /* Floating particles */
+    .hero-particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: var(--red); animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) scale(1); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+    }
+
+    /* Animated route path */
+    .hero-route-svg {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
+      pointer-events: none; overflow: hidden;
+    }
+
+    /* Train animation */
+    .hero-train-track {
+      position: absolute; bottom: 60px; left: 0; right: 0;
+      height: 80px; pointer-events: none; overflow: hidden;
+    }
+    .train-svg {
+      position: absolute; bottom: 0;
+      animation: trainMove 12s linear infinite;
+    }
+    @keyframes trainMove {
+      from { left: -300px; }
+      to { left: 110%; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; max-width: 900px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(213,1,0,0.15); border: 1px solid rgba(213,1,0,0.3);
+      color: #FF6B6B; padding: 8px 18px; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+    }
+    .hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 900;
+      line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .hero-title .line1 { color: white; display: block; }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(135deg, #D50100 0%, #FF5F5F 50%, #D50100 100%);
+      background-size: 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem); color: rgba(255,255,255,0.6);
+      max-width: 600px; margin: 0 auto 40px;
+      font-weight: 400; line-height: 1.7;
+    }
+    .hero-buttons {
+      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 64px;
+    }
+    .store-img-btn {
+      transition: transform 0.3s ease, filter 0.3s ease;
+      filter: brightness(0.9);
+    }
+    .store-img-btn:hover { transform: translateY(-4px) scale(1.03); filter: brightness(1.1); }
+    .store-img-btn img { height: 50px; width: auto; border-radius: 10px; }
+
+    /* Hero stats */
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+      position: relative; z-index: 2;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-size: 2.5rem; font-weight: 900; color: white;
+      line-height: 1; letter-spacing: -0.03em;
+    }
+    .hero-stat-num span { color: var(--red); }
+    .hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+    /* ======= SECTION COMMON ======= */
+    section { padding: 100px 0; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--red);
+      margin-bottom: 16px;
+    }
+    .section-tag::before {
+      content: ''; width: 20px; height: 2px; background: var(--red); border-radius: 1px;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.15; color: white;
+    }
+    .section-title .accent { color: var(--red); }
+    .section-subtitle { color: rgba(255,255,255,0.5); font-size: 1.05rem; margin-top: 12px; }
+
+    /* Reveal animation */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ======= FEATURES SECTION ======= */
+    .features-section {
+      background: linear-gradient(180deg, #060F24 0%, #081A3D 100%);
+      position: relative; overflow: hidden;
+    }
+    .features-section::before {
+      content: ''; position: absolute;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(213,1,0,0.08) 0%, transparent 70%);
+      top: -200px; right: -200px; pointer-events: none;
+    }
+    .features-header { margin-bottom: 64px; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 28px 24px;
+      cursor: default; position: relative; overflow: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .feature-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(213,1,0,0.08) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .feature-card:hover { transform: translateY(-8px); border-color: rgba(213,1,0,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(213,1,0,0.1); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--red-light); border: 1px solid rgba(213,1,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; color: #FF6B6B;
+      transition: var(--transition);
+    }
+    .feature-card:hover .feature-icon { background: var(--red); color: white; border-color: var(--red); }
+    .feature-name { font-size: 0.95rem; font-weight: 700; color: white; }
+
+    /* ======= TESTIMONIALS ======= */
+    .testimonials-section {
+      background: #060F24;
+      overflow: hidden;
+    }
+    .marquee-wrapper { overflow: hidden; mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); -webkit-mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); }
+    .marquee { display: flex; gap: 24px; width: max-content; animation: marqueeScroll 35s linear infinite; }
+    @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .testimonial-card {
+      background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+      padding: 28px; width: 340px; flex-shrink: 0;
+      backdrop-filter: blur(10px);
+    }
+    .t-stars { color: #FFD700; font-size: 1.1rem; margin-bottom: 14px; letter-spacing: 2px; }
+    .t-text { color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+    .t-user { display: flex; align-items: center; gap: 12px; }
+    .t-user img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(213,1,0,0.3); }
+    .t-info strong { display: block; font-size: 0.9rem; color: white; }
+    .t-info span { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ======= STORY SECTION ======= */
+    .story-section {
+      background: linear-gradient(180deg, #081A3D 0%, #060F24 100%);
+      position: relative; overflow: hidden;
+    }
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .story-text p { color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 24px; font-size: 1.05rem; }
+    .founder-card {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--card-bg); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 20px 24px; margin-bottom: 32px;
+      backdrop-filter: blur(10px);
+    }
+    .founder-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(213,1,0,0.4); }
+    .founder-card .name { font-weight: 700; color: white; font-size: 1rem; }
+    .founder-card a { color: var(--red); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    .founder-card a:hover { opacity: 0.8; }
+    .story-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .story-features li {
+      display: flex; align-items: center; gap: 12px;
+      color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+    .story-features li::before {
+      content: ''; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--red);
+    }
+    .story-card {
+      background: linear-gradient(135deg, rgba(213,1,0,0.15) 0%, var(--card-bg) 100%);
+      border: 1px solid rgba(213,1,0,0.2); border-radius: 28px;
+      padding: 48px; position: relative; overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .story-card::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(213,1,0,0.2) 0%, transparent 70%);
+    }
+    .story-card h3 { font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 16px; }
+    .story-card p { color: rgba(255,255,255,0.6); line-height: 1.8; }
+    .stat-highlight {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px;
+    }
+    .stat-box {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 20px;
+      text-align: center;
+    }
+    .stat-box .num { font-size: 2rem; font-weight: 900; color: var(--red); line-height: 1; }
+    .stat-box .lbl { font-size: 0.78rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+    /* ======= ABOUT/MOBOND ======= */
+    .mobond-section { background: #060F24; }
+    .mobond-card {
+      background: var(--card-bg); border: 1px solid var(--glass-border);
+      border-radius: 28px; padding: 56px; max-width: 800px; margin: 48px auto;
+      text-align: center; position: relative; overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .mobond-logo-wrap {
+      width: 100px; height: 100px; background: white; border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 32px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      padding: 12px;
+    }
+    .mobond-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .mobond-card p { color: rgba(255,255,255,0.65); line-height: 1.9; font-size: 1.05rem; }
+    .mobond-card strong { color: white; }
+    .mobond-card em { color: var(--red); font-style: normal; }
+    .featured-title { text-align: center; font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 40px; }
+    .logo-marquee-wrapper { overflow: hidden; mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); -webkit-mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); }
+    .logo-marquee { display: flex; align-items: center; gap: 56px; width: max-content; animation: marqueeScroll 20s linear infinite; }
+    .logo-marquee img { height: 36px; width: auto; filter: brightness(0) invert(1); opacity: 0.4; transition: opacity 0.3s; }
+    .logo-marquee img:hover { opacity: 0.9; }
+
+    /* ======= CITIES SECTION ======= */
+    .cities-section { background: linear-gradient(180deg, #060F24 0%, #081A3D 100%); }
+    .cities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .cities-text p { color: rgba(255,255,255,0.6); line-height: 1.8; margin: 16px 0 28px; font-size: 1.05rem; }
+    .city-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .city-list li {
+      display: flex; align-items: center; gap: 12px;
+      color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+    .city-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .city-dot.red { background: var(--red); box-shadow: 0 0 8px rgba(213,1,0,0.5); }
+    .city-dot.blue { background: var(--navy-light); box-shadow: 0 0 8px rgba(26,66,138,0.5); }
+    .map-wrap {
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      border: 1px solid var(--glass-border);
+      height: 440px;
+    }
+    #india-map { width: 100%; height: 100%; }
+
+    /* Leaflet overrides for dark theme */
+    .leaflet-container { background: #0a1628 !important; }
     .leaflet-popup-content-wrapper {
-      border-radius: 12px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+      background: #0D1F40 !important; color: white !important;
+      border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.1) !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+    .leaflet-popup-tip { display: none !important; }
+    @keyframes leaflet-pulse {
+      0%,100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.5); opacity: 0; }
     }
 
-    .leaflet-popup-tip {
-      display: none !important;
+    /* ======= CTA SECTION ======= */
+    .cta-section {
+      background: linear-gradient(135deg, #081F4A 0%, #0D3980 50%, #0A1628 100%);
+      position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(213,1,0,0.15) 0%, transparent 70%);
+    }
+    .cta-content { text-align: center; position: relative; z-index: 1; }
+    .cta-content h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 16px; }
+    .cta-content p { color: rgba(255,255,255,0.6); font-size: 1.1rem; margin-bottom: 40px; }
+
+    /* ======= FOOTER ======= */
+    footer {
+      background: #050D1E; border-top: 1px solid var(--glass-border);
+      padding: 64px 0 32px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 56px;
+    }
+    .footer-brand p { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 12px; line-height: 1.7; }
+    .footer-socials { display: flex; gap: 14px; margin-top: 20px; }
+    .footer-socials a {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5); transition: var(--transition);
+    }
+    .footer-socials a:hover { background: var(--red); color: white; border-color: var(--red); transform: translateY(-3px); }
+    .footer-col h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+    .footer-col a { display: block; color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 12px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--red); }
+    .footer-bottom {
+      border-top: 1px solid var(--glass-border); padding-top: 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.3); font-size: 0.85rem;
     }
 
-    #india-map .leaflet-control-zoom a {
-      color: #1A428A;
+    /* ======= RESPONSIVE ======= */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      .story-grid, .cities-grid { grid-template-columns: 1fr; gap: 40px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .hero-stats { gap: 32px; }
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
     }
+    @media (max-width: 600px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2.4rem; }
+      .hero-stats { gap: 24px; }
+      .hero-stat-num { font-size: 1.8rem; }
+      .stat-highlight { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      section { padding: 72px 0; }
+      .mobond-card { padding: 32px 24px; }
+      .story-card { padding: 32px 24px; }
+    }
+
+    /* ======= UTILITY ======= */
+    .text-center { text-align: center; }
+    .mt-4 { margin-top: 16px; }
+    .mt-8 { margin-top: 32px; }
+    .mb-4 { margin-bottom: 16px; }
   </style>
 </head>
 
 <body class="no-scroll">
-  <!-- Intro Video Overlay -->
+
+  <!-- ===== INTRO OVERLAY ===== -->
   <div id="intro-overlay">
     <div class="intro-logo-container">
-      <img src="/m-indicator opening logo.jpeg" alt="m-Indicator Intro" id="intro-logo">
+      <img src="/m-indicator opening logo.jpeg" alt="m-Indicator" id="intro-logo">
+      <div class="intro-name"><span>m</span>-Indicator</div>
+      <div class="intro-loader"><div class="intro-loader-bar"></div></div>
     </div>
   </div>
 
-  <div id="app"></div>
-  <!-- Side Drawer -->
+  <!-- ===== SIDE DRAWER ===== -->
   <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
   <aside class="side-drawer" id="sideDrawer">
     <div class="drawer-header">
-      <div class="drawer-profile">
-        <a href="/M-indicator-2.0/" class="logo text-decoration-none" style="text-decoration:none; margin: 0; padding: 0;">
-          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="45" fill="#C10000" />
-            <circle cx="50" cy="50" r="26" fill="white" />
-            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
-            <circle cx="50" cy="50" r="7" fill="white" />
-            <path d="M18 50L30 40V60L18 50Z" fill="white" />
-            <path d="M82 50L70 40V60L82 50Z" fill="white" />
-            <rect x="34" y="47" width="8" height="6" fill="white" />
-            <rect x="58" y="47" width="8" height="6" fill="white" />
-          </svg>
-          <span class="brand-name" style="font-size: 1.1rem;"><strong>m</strong>-Indicator</span>
-        </a>
-      </div>
-      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+      <a href="/M-indicator-2.0/" class="logo-link" onclick="closeDrawer()">
+        <img src="/mindicator logo.png" class="logo-img" alt="m-Indicator logo">
+        <span class="brand"><span>m</span>-Indicator</span>
+      </a>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
     <ul class="drawer-nav">
-      <li><a href="/M-indicator-2.0/" class="active"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg></span> Home</a></li>
-      <li><a href="/M-indicator-2.0/#features"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="9" height="9" rx="1" />
-              <rect x="13" y="2" width="9" height="9" rx="1" />
-              <rect x="2" y="13" width="9" height="9" rx="1" />
-              <rect x="13" y="13" width="9" height="9" rx="1" />
-            </svg></span> Ecosystem</a></li>
-      <li><a href="/M-indicator-2.0/#cities"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg></span> Our Cities</a></li>
-      <li><a href="/M-indicator-2.0/#story"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
-            </svg></span> Origin Story</a></li>
-      <li><a href="/M-indicator-2.0/news.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z" />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
-            </svg></span> News</a></li>
-      <li><a href="/M-indicator-2.0/upcoming.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg></span> M-Indicator 2.0</a></li>
+      <li><a href="/M-indicator-2.0/" class="active" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Home</a></li>
+      <li><a href="/M-indicator-2.0/#features" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg></span>Ecosystem</a></li>
+      <li><a href="/M-indicator-2.0/#cities" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>Our Cities</a></li>
+      <li><a href="/M-indicator-2.0/#story" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>Origin Story</a></li>
+      <li><a href="/M-indicator-2.0/news.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>News</a></li>
+      <li><a href="/M-indicator-2.0/upcoming.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>M-Indicator 2.0</a></li>
       <div class="drawer-divider"></div>
-      <li><a href="/M-indicator-2.0/resumedb.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" />
-              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-              <line x1="12" y1="12" x2="12" y2="16" />
-              <line x1="10" y1="14" x2="14" y2="14" />
-            </svg></span> ResumeDB</a></li>
-      <li><a href="/M-indicator-2.0/ad.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg></span> Advertising</a></li>
+      <li><a href="/M-indicator-2.0/resumedb.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></span>ResumeDB</a></li>
+      <li><a href="/M-indicator-2.0/ad.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>Advertising</a></li>
       <div class="drawer-divider"></div>
-      <li><a href="/M-indicator-2.0/contact.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22 6 12 13 2 6" />
-            </svg></span> Contact Us</a></li>
-      <li><a href="/M-indicator-2.0/terms.html"><span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg></span> Privacy & Terms</a></li>
+      <li><a href="/M-indicator-2.0/contact.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span>Contact Us</a></li>
+      <li><a href="/M-indicator-2.0/terms.html" onclick="closeDrawer()">
+        <span class="d-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Privacy &amp; Terms</a></li>
     </ul>
     <div class="drawer-footer">
       <div class="drawer-socials">
-        <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X / Twitter">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
+        <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
         <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-          </svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
         </a>
         <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-          </svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
         </a>
       </div>
-      <p class="drawer-copyright">&copy; 2026 Mobond App · Built for the Indian Commuter</p>
+      <p class="drawer-copyright">© 2026 Mobond · Built for the Indian Commuter</p>
     </div>
   </aside>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="container nav-content">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Open menu">
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-content">
+      <div class="nav-left">
+        <button class="nav-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
-        <a href="/M-indicator-2.0/" class="logo text-decoration-none" style="text-decoration:none;">
-          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="45" fill="#C10000" />
-            <circle cx="50" cy="50" r="26" fill="white" />
-            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
-            <circle cx="50" cy="50" r="7" fill="white" />
-            <path d="M18 50L30 40V60L18 50Z" fill="white" />
-            <path d="M82 50L70 40V60L82 50Z" fill="white" />
-            <rect x="34" y="47" width="8" height="6" fill="white" />
-            <rect x="58" y="47" width="8" height="6" fill="white" />
-          </svg>
-          <span class="brand-name"><strong>m</strong>-Indicator</span>
+        <a href="/M-indicator-2.0/" class="logo-link">
+          <img src="/mindicator logo.png" class="logo-img" alt="m-Indicator">
+          <span class="brand"><span>m</span>-Indicator</span>
         </a>
       </div>
       <div class="nav-links">
-        <a href="/M-indicator-2.0/upcoming.html" style="color:var(--primary-blue);font-weight:700;font-size:1.05rem;">M-Indicator
-          2.0</a>
-        <a href="/M-indicator-2.0/resumedb.html" class="btn"
-          style="background-color:var(--primary-red);color:white;border-radius:30px;font-weight:700;padding:12px 28px;font-size:1.05rem;">ResumeDB</a>
+        <a href="/M-indicator-2.0/#features">Ecosystem</a>
+        <a href="/M-indicator-2.0/#cities">Cities</a>
+        <a href="/M-indicator-2.0/#story">Our Story</a>
+        <a href="/M-indicator-2.0/news.html">News</a>
+        <a href="/M-indicator-2.0/upcoming.html" style="color:var(--red);font-weight:700;">v2.0</a>
       </div>
+      <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank" class="nav-cta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download App
+      </a>
     </div>
   </nav>
 
+  <!-- ===== HERO ===== -->
+  <header class="hero" id="home">
+    <!-- Animated Grid Background -->
+    <div class="hero-grid">
+      <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="1440" height="900" fill="url(#grid)"/>
+        <!-- Animated circuit paths -->
+        <path class="circuit-path" d="M 0 200 L 200 200 L 200 400 L 600 400" fill="none" stroke="rgba(213,1,0,0.4)" stroke-width="1.5" stroke-dasharray="8 4">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M 1440 300 L 1100 300 L 1100 500 L 800 500" fill="none" stroke="rgba(26,66,138,0.4)" stroke-width="1.5" stroke-dasharray="8 4">
+          <animate attributeName="stroke-dashoffset" from="0" to="24" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+        <path d="M 400 0 L 400 150 L 700 150 L 700 350" fill="none" stroke="rgba(213,1,0,0.2)" stroke-width="1" stroke-dasharray="6 3">
+          <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M 900 900 L 900 700 L 1200 700 L 1200 550" fill="none" stroke="rgba(26,66,138,0.3)" stroke-width="1" stroke-dasharray="6 3">
+          <animate attributeName="stroke-dashoffset" from="0" to="18" dur="3.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- Glowing dots at intersections -->
+        <circle cx="200" cy="400" r="4" fill="rgba(213,1,0,0.8)">
+          <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="1100" cy="300" r="4" fill="rgba(26,66,138,0.9)">
+          <animate attributeName="r" values="3;6;3" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="700" cy="150" r="3" fill="rgba(213,1,0,0.6)">
+          <animate attributeName="r" values="2;5;2" dur="3s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="hero-particles" id="particles"></div>
+
+    <!-- Animated Train Track -->
+    <div class="hero-train-track">
+      <!-- Track rails -->
+      <svg style="position:absolute;bottom:0;width:100%;height:100%;opacity:0.2" preserveAspectRatio="none" viewBox="0 0 1440 80">
+        <line x1="0" y1="65" x2="1440" y2="65" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+        <line x1="0" y1="75" x2="1440" y2="75" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+        <!-- Rail ties -->
+        <g stroke="rgba(255,255,255,0.3)" stroke-width="2">
+          <line x1="40" y1="58" x2="40" y2="82"/><line x1="80" y1="58" x2="80" y2="82"/>
+          <line x1="120" y1="58" x2="120" y2="82"/><line x1="160" y1="58" x2="160" y2="82"/>
+          <line x1="200" y1="58" x2="200" y2="82"/><line x1="240" y1="58" x2="240" y2="82"/>
+          <line x1="280" y1="58" x2="280" y2="82"/><line x1="320" y1="58" x2="320" y2="82"/>
+          <line x1="360" y1="58" x2="360" y2="82"/><line x1="400" y1="58" x2="400" y2="82"/>
+          <line x1="440" y1="58" x2="440" y2="82"/><line x1="480" y1="58" x2="480" y2="82"/>
+          <line x1="520" y1="58" x2="520" y2="82"/><line x1="560" y1="58" x2="560" y2="82"/>
+          <line x1="600" y1="58" x2="600" y2="82"/><line x1="640" y1="58" x2="640" y2="82"/>
+          <line x1="680" y1="58" x2="680" y2="82"/><line x1="720" y1="58" x2="720" y2="82"/>
+          <line x1="760" y1="58" x2="760" y2="82"/><line x1="800" y1="58" x2="800" y2="82"/>
+          <line x1="840" y1="58" x2="840" y2="82"/><line x1="880" y1="58" x2="880" y2="82"/>
+          <line x1="920" y1="58" x2="920" y2="82"/><line x1="960" y1="58" x2="960" y2="82"/>
+          <line x1="1000" y1="58" x2="1000" y2="82"/><line x1="1040" y1="58" x2="1040" y2="82"/>
+          <line x1="1080" y1="58" x2="1080" y2="82"/><line x1="1120" y1="58" x2="1120" y2="82"/>
+          <line x1="1160" y1="58" x2="1160" y2="82"/><line x1="1200" y1="58" x2="1200" y2="82"/>
+          <line x1="1240" y1="58" x2="1240" y2="82"/><line x1="1280" y1="58" x2="1280" y2="82"/>
+          <line x1="1320" y1="58" x2="1320" y2="82"/><line x1="1360" y1="58" x2="1360" y2="82"/>
+          <line x1="1400" y1="58" x2="1400" y2="82"/>
+        </g>
+      </svg>
+      <!-- Animated Train -->
+      <svg class="train-svg" width="240" height="60" viewBox="0 0 240 60">
+        <!-- Train body -->
+        <rect x="20" y="10" width="200" height="36" rx="6" fill="#0D3980" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <!-- Front cab -->
+        <path d="M 200 10 L 220 10 L 230 20 L 230 46 L 200 46 Z" fill="#1A428A"/>
+        <!-- Windows -->
+        <rect x="30" y="18" width="22" height="16" rx="3" fill="rgba(135,200,255,0.7)"/>
+        <rect x="62" y="18" width="22" height="16" rx="3" fill="rgba(135,200,255,0.6)"/>
+        <rect x="94" y="18" width="22" height="16" rx="3" fill="rgba(135,200,255,0.6)"/>
+        <rect x="126" y="18" width="22" height="16" rx="3" fill="rgba(135,200,255,0.6)"/>
+        <rect x="158" y="18" width="22" height="16" rx="3" fill="rgba(135,200,255,0.6)"/>
+        <rect x="205" y="18" width="18" height="16" rx="3" fill="rgba(135,200,255,0.8)"/>
+        <!-- Red stripe -->
+        <rect x="20" y="42" width="200" height="4" rx="2" fill="#D50100"/>
+        <rect x="200" y="42" width="30" height="4" rx="2" fill="#D50100"/>
+        <!-- Wheels -->
+        <circle cx="55" cy="50" r="8" fill="#081F4A" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="55" cy="50" r="3" fill="#D50100"/>
+        <circle cx="120" cy="50" r="8" fill="#081F4A" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="120" cy="50" r="3" fill="#D50100"/>
+        <circle cx="190" cy="50" r="8" fill="#081F4A" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="190" cy="50" r="3" fill="#D50100"/>
+        <!-- Headlight glow -->
+        <circle cx="228" cy="30" r="4" fill="#FFE566">
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="228" cy="30" r="8" fill="rgba(255,229,102,0.3)">
+          <animate attributeName="r" values="6;12;6" dur="1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Speed lines -->
+        <g opacity="0.4">
+          <line x1="0" y1="22" x2="16" y2="22" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+          <line x1="0" y1="28" x2="10" y2="28" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+          <line x1="0" y1="34" x2="14" y2="34" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span> India's #1 Transit Intelligence App
+      </div>
+      <h1 class="hero-title">
+        <span class="line1">Navigate Every City,</span>
+        <span class="line2">Every Journey</span>
+      </h1>
+      <p class="hero-subtitle">
+        Live train tracking, offline timetables, metro, bus, ferry — the complete urban mobility experience for 10M+ Indian commuters.
+      </p>
+      <div class="hero-buttons">
+        <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
+          <img src="/appstore.png" alt="Download on App Store" />
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank" class="store-img-btn">
+          <img src="/googleplay.png" alt="Get it on Google Play" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero Stats -->
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num count-up" data-target="10" data-suffix="M+">0M+</div>
+        <div class="hero-stat-label">Downloads</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num count-up" data-target="84" data-suffix="K+">0K+</div>
+        <div class="hero-stat-label">Schedules</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num count-up" data-target="232" data-suffix="">0</div>
+        <div class="hero-stat-label">Trains Tracked</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">100<span>%</span></div>
+        <div class="hero-stat-label">Offline Ready</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== FEATURES / ECOSYSTEM ===== -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="features-header reveal">
+        <div class="section-tag">Ecosystem</div>
+        <h2 class="section-title">Comprehensive <span class="accent">Features</span></h2>
+        <p class="section-subtitle">Your ultimate digital companion for seamless urban mobility.</p>
+      </div>
+      <div class="features-grid reveal">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/></svg>
+          </div>
+          <div class="feature-name">Local Train Timetable</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16"/><path d="M4 8h16"/><rect x="6" y="8" width="12" height="12" rx="2"/><circle cx="9" cy="16" r="1"/><circle cx="15" cy="16" r="1"/><path d="M12 8v4"/></svg>
+          </div>
+          <div class="feature-name">Metro Timetable</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15h18"/><path d="M8 15v3"/><path d="M16 15v3"/><path d="M12 4a3 3 0 0 0-3 3v8h6V7a3 3 0 0 0-3-3z"/></svg>
+          </div>
+          <div class="feature-name">Mono Rail</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M8 17v2"/><path d="M16 17v2"/><path d="M4 11h16"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>
+          </div>
+          <div class="feature-name">Bus Routes</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21l3-3h8l3 3"/><rect x="4" y="5" width="16" height="12" rx="2"/><path d="M4 10h16"/><path d="M12 5v5"/></svg>
+          </div>
+          <div class="feature-name">Express Train</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17c-1.5 0-2 1-4 1s-2.5-1-4-1-2 1-4 1-2.5-1-4-1-2 1-4 1"/><path d="M4 16h16l-3-6H7l-3 6z"/><path d="M9 10v-3h6v3"/></svg>
+          </div>
+          <div class="feature-name">Ferry</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l4 5 1 5-2 1-14-1-2-5 3-5h10z"/><circle cx="6" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></svg>
+          </div>
+          <div class="feature-name">Auto Fares</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10l-2 2v6h2v2h2v-2h10v2h2v-2h2v-6l-2-2"/><path d="M19 10L17 5H7L5 10"/><circle cx="7" cy="14" r="1"/><circle cx="17" cy="14" r="1"/></svg>
+          </div>
+          <div class="feature-name">Taxi Fares</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(219,39,119,0.15);border-color:rgba(219,39,119,0.2);color:#f472b6;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z"/><path d="M12 12V3"/><path d="M9 7h6"/></svg>
+          </div>
+          <div class="feature-name">Women Safety</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="feature-name">Emergency No.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(234,179,8,0.15);border-color:rgba(234,179,8,0.2);color:#fbbf24;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="feature-name">Live Alerts</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.2);color:#4ade80;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="feature-name">Route Planner</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials-section" style="padding-bottom: 0;">
+    <div class="container reveal" style="margin-bottom: 48px;">
+      <div class="section-tag">Reviews</div>
+      <h2 class="section-title">What <span class="accent">Mumbai</span> is Saying</h2>
+      <p class="section-subtitle">Live reviews sourced directly from the Google Play Store.</p>
+    </div>
+    <div class="marquee-wrapper">
+      <div class="marquee">
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every improvement with every update. No need to look for any another app of this type."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo" alt="Basant Malpani" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Basant Malpani</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow local, Mail train. Its easy to use. Till now happy with the app."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw" alt="Jeniferstella" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Jeniferstella</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Apps like m-Indicator set a great example of how public service apps should be developed. The app is free to use and provides accurate and helpful information."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjVNzAEydPKlRn6oAyt_nd34dvcophHBm1WShVwjHRIrgRKS5Mg" alt="Deepak Sarafdar" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Deepak Sarafdar</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★☆</div>
+          <p class="t-text">"App is good. Many newly added AC buses are showing in the list. Helpful for new commuters navigating municipal corporation transport buses."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIMs5hCiTA13bCCaOl6Xm0Eo7nlnrCt3JHyy6ENDQWcx9P8c3s=mo" alt="Shrikant Panchal" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Shrikant Panchal</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <!-- Duplicates for loop -->
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every improvement with every update. No need to look for any another app of this type."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo" alt="Basant Malpani" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Basant Malpani</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow local, Mail train. Its easy to use. Till now happy with the app."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw" alt="Jeniferstella" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Jeniferstella</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Apps like m-Indicator set a great example of how public service apps should be developed. The app is free to use and provides accurate and helpful information."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjVNzAEydPKlRn6oAyt_nd34dvcophHBm1WShVwjHRIrgRKS5Mg" alt="Deepak Sarafdar" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Deepak Sarafdar</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★☆</div>
+          <p class="t-text">"App is good. Many newly added AC buses are showing in the list. Helpful for new commuters navigating municipal corporation transport buses."</p>
+          <div class="t-user">
+            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIMs5hCiTA13bCCaOl6Xm0Eo7nlnrCt3JHyy6ENDQWcx9P8c3s=mo" alt="Shrikant Panchal" referrerpolicy="no-referrer">
+            <div class="t-info"><strong>Shrikant Panchal</strong><span>Google Play Review</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ORIGIN STORY ===== -->
+  <section class="story-section" id="story">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-text reveal">
+          <div class="section-tag">Origin Story</div>
+          <h2 class="section-title">Born out of<br><span class="accent">Commuter Frustration</span></h2>
+          <p>Launched in 2010 by <strong style="color:white">Sachin Suryakant Teke</strong>, m-Indicator started because one tech-commuter was fed up with chaotic train information. It wasn't just built for tech; it was built as a <strong style="color:white">digital lifeline</strong> to navigate complex local transport realistically.</p>
+          <div class="founder-card">
+            <img src="/founder.png" alt="Sachin Teke">
+            <div>
+              <div class="name">Sachin Suryakant Teke</div>
+              <a href="https://www.linkedin.com/in/sachin-teke-314213b3/" target="_blank">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                Connect on LinkedIn
+              </a>
+            </div>
+          </div>
+          <ul class="story-features">
+            <li>Women's Safety Module (Works Offline via SMS)</li>
+            <li>Emergency Police &amp; Jurisdiction Contacts</li>
+            <li>Hidden Peak-Hour "Less Crowded Train" pointers</li>
+            <li>Classifieds, Jobs &amp; Weekend Travel Guides</li>
+          </ul>
+        </div>
+        <div class="story-card reveal">
+          <h3>A Mobility Data Goldmine</h3>
+          <p>With tens of millions of daily routes queried and shared, m-Indicator holds one of India's richest mobility datasets. This positions it perfectly to spearhead future urban traffic routing and expansive analytic capabilities.</p>
+          <div class="stat-highlight">
+            <div class="stat-box">
+              <div class="num">10M+</div>
+              <div class="lbl">Users</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">15+</div>
+              <div class="lbl">Years</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">84K+</div>
+              <div class="lbl">Schedules</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">10+</div>
+              <div class="lbl">Cities</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT MOBOND ===== -->
+  <section class="mobond-section" id="about">
+    <div class="container">
+      <div class="text-center reveal">
+        <div class="section-tag">About</div>
+        <h2 class="section-title">About <span class="accent">Mobond</span></h2>
+      </div>
+      <div class="mobond-card reveal">
+        <div class="mobond-logo-wrap">
+          <img src="/mobond logo.png" alt="Mobond Logo">
+        </div>
+        <p>Mobond launched our first free product <strong>m-Indicator</strong> in May 2010. <strong>Mobond</strong> is a combination of two words <em>'Mob'</em> and <em>'Bond'</em>. The name suggests our aim is <strong>'bonding the mob'</strong> or 'bonding the angry crowd.'<br><br>Mobond is dedicated to building software products which will be fundamentally useful to the masses. We regularly collect and process massive amounts of transit data from cities and towns in India to provide updated, reliable travel information to millions of daily commuters.</p>
+      </div>
+      <h3 class="featured-title reveal">Featured In</h3>
+      <div class="logo-marquee-wrapper reveal">
+        <div class="logo-marquee">
+          <img src="/logos/times-of-india.png" alt="Times of India">
+          <img src="/logos/mid-day.png" alt="Mid-Day">
+          <img src="/logos/hindustan-times.png" alt="Hindustan Times">
+          <img src="/logos/loksattap.png" alt="Loksatta">
+          <img src="/logos/lokmat.jpg" alt="Lokmat">
+          <img src="/logos/prahar.png" alt="Prahar">
+          <img src="/logos/saamana.jpg" alt="Saamana">
+          <img src="/logos/times-of-india.png" alt="Times of India">
+          <img src="/logos/mid-day.png" alt="Mid-Day">
+          <img src="/logos/hindustan-times.png" alt="Hindustan Times">
+          <img src="/logos/loksattap.png" alt="Loksatta">
+          <img src="/logos/lokmat.jpg" alt="Lokmat">
+          <img src="/logos/prahar.png" alt="Prahar">
+          <img src="/logos/saamana.jpg" alt="Saamana">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CITIES ===== -->
+  <section class="cities-section" id="cities">
+    <div class="container">
+      <div class="cities-grid">
+        <div class="cities-text reveal">
+          <div class="section-tag">Our Cities</div>
+          <h2 class="section-title">Connecting India's<br><span class="accent">Mega Cities</span></h2>
+          <p>From the bustling local trains of Mumbai to the sprawling metro network of Delhi, m-Indicator brings clarity to urban mobility across India.</p>
+          <ul class="city-list">
+            <li><span class="city-dot red"></span>Mumbai (Local, Metro, Bus, Mono)</li>
+            <li><span class="city-dot blue"></span>Pune (Bus, Local)</li>
+            <li><span class="city-dot red"></span>Delhi (Metro, Bus)</li>
+            <li><span class="city-dot blue"></span>Bengaluru (Metro, Bus)</li>
+            <li><span class="city-dot blue"></span>Ahmedabad, Nashik, Nagpur &amp; more...</li>
+          </ul>
+        </div>
+        <div class="reveal">
+          <div class="map-wrap">
+            <div id="india-map"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MAP INIT ===== -->
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var map = L.map('india-map', {
+        center: [20.5937, 78.9629], zoom: 5,
+        zoomControl: true, scrollWheelZoom: false, attributionControl: false
+      });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+      function makeIcon(color) {
+        return L.divIcon({
+          className: '',
+          html: '<div style="width:14px;height:14px;background:' + color + ';border:2px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.6);position:relative;"><div style="width:28px;height:28px;background:' + color + '33;border-radius:50%;position:absolute;top:-7px;left:-7px;animation:leaflet-pulse 2s ease-in-out infinite;"></div></div>',
+          iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10]
+        });
+      }
+      var redIcon = makeIcon('#D50100'), blueIcon = makeIcon('#1A428A');
+      var cities = [
+        { name: 'Mumbai', lat: 19.0760, lng: 72.8777, icon: redIcon, modes: 'Local Train · Metro · Bus · Mono Rail' },
+        { name: 'Navi Mumbai', lat: 19.0368, lng: 73.0158, icon: redIcon, modes: 'Local Train · Bus' },
+        { name: 'Thane', lat: 19.2183, lng: 72.9781, icon: redIcon, modes: 'Local Train · Bus' },
+        { name: 'Pune', lat: 18.5204, lng: 73.8567, icon: blueIcon, modes: 'Bus · Local Train' },
+        { name: 'Delhi', lat: 28.6139, lng: 77.2090, icon: redIcon, modes: 'Metro · Bus · DTC' },
+        { name: 'Bengaluru', lat: 12.9716, lng: 77.5946, icon: blueIcon, modes: 'Metro · Bus · BMTC' },
+        { name: 'Ahmedabad', lat: 23.0225, lng: 72.5714, icon: blueIcon, modes: 'AMTS Bus · BRTS · Metro' },
+        { name: 'Nashik', lat: 19.9975, lng: 73.7898, icon: blueIcon, modes: 'City Bus' },
+        { name: 'Nagpur', lat: 21.1458, lng: 79.0882, icon: blueIcon, modes: 'Bus · Metro' },
+        { name: 'Surat', lat: 21.1702, lng: 72.8311, icon: blueIcon, modes: 'BRTS Bus' },
+      ];
+      cities.forEach(function (c) {
+        L.marker([c.lat, c.lng], { icon: c.icon }).addTo(map)
+          .bindPopup('<div style="font-family:Outfit,sans-serif;min-width:140px;"><div style="font-weight:800;font-size:0.9rem;color:white;margin-bottom:3px;">' + c.name + '</div><div style="font-size:0.75rem;color:#8B9CB8;">' + c.modes + '</div></div>', { offset: [0, -4] });
+      });
+      setTimeout(function () { map.invalidateSize(); }, 3200);
+      window.addEventListener('resize', function () { map.invalidateSize(); });
+    });
+  </script>
+
+  <!-- ===== CTA SECTION ===== -->
+  <section class="cta-section" id="download">
+    <div class="container">
+      <div class="cta-content reveal">
+        <div class="section-tag" style="justify-content:center;">Get Started</div>
+        <h2>Ready to transform your commute?</h2>
+        <p>Join 10 million+ smart commuters and never miss a beat.</p>
+        <div class="hero-buttons">
+          <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
+            <img src="/appstore.png" alt="Download on App Store" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank" class="store-img-btn">
+            <img src="/googleplay.png" alt="Get it on Google Play" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/M-indicator-2.0/" class="logo-link">
+            <img src="/mindicator logo.png" class="logo-img" alt="m-Indicator">
+            <span class="brand"><span>m</span>-Indicator</span>
+          </a>
+          <p>India's most powerful transit intelligence platform. Built for the Indian commuter since 2010.</p>
+          <div class="footer-socials">
+            <a href="https://x.com/m_indicator_app?s=20" target="_blank" aria-label="X">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/m.indicator.official/" target="_blank" aria-label="Instagram">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://www.facebook.com/share/1CctJbmWyZ/" target="_blank" aria-label="Facebook">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <a href="/M-indicator-2.0/#features">Ecosystem</a>
+          <a href="/M-indicator-2.0/#cities">Our Cities</a>
+          <a href="/M-indicator-2.0/#story">Origin Story</a>
+          <a href="/M-indicator-2.0/upcoming.html">M-Indicator 2.0</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="/M-indicator-2.0/news.html">News</a>
+          <a href="/M-indicator-2.0/contact.html">Contact Us</a>
+          <a href="/M-indicator-2.0/resumedb.html">ResumeDB</a>
+          <a href="/M-indicator-2.0/ad.html">Advertise with Us</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="/M-indicator-2.0/terms.html">Privacy Policy</a>
+          <a href="/M-indicator-2.0/terms.html">Terms of Service</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Mobond App. All rights reserved.</span>
+        <span>Built for the Indian Commuter 🇮🇳</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // ---- Drawer ----
     function toggleDrawer() {
       const drawer = document.getElementById('sideDrawer');
       const overlay = document.getElementById('drawerOverlay');
@@ -204,607 +1204,68 @@
     }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
-    // Auto-close drawer on link click
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.drawer-nav a').forEach(link => {
-        link.addEventListener('click', () => {
-          closeDrawer();
-        });
-      });
+    // ---- Intro Overlay ----
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('intro-overlay').classList.add('hidden');
+        document.body.classList.remove('no-scroll');
+      }, 2200);
     });
-  </script>
 
+    // ---- Navbar scroll ----
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+    });
 
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="hero-bg-anim">
-      <!-- Background Layers (furthest to closest) -->
-      <div class="hero-layer layer-skyline-back"></div>
-      <div class="hero-layer layer-skyline-front"></div>
-
-      <div class="hero-layer layer-track"></div>
-      <div class="hero-layer layer-metro"></div>
-
-      <div class="hero-layer layer-train"></div>
-
-      <div class="hero-layer layer-road"></div>
-      <div class="hero-layer layer-vehicles"></div>
-    </div>
-    <div class="container hero-content">
-      <div class="hero-text">
-        <h1>Smart Transit for<br><span class="highlight-red">Smart Cities</span></h1>
-        <p>Navigate Mumbai and Indian cities like a pro. Live train tracking, bus routes, and offline timetables at your
-          fingertips.</p>
-        <div class="hero-buttons center">
-          <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
-            <img src="/appstore.png" alt="Download on App Store" />
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank"
-            class="store-img-btn">
-            <img src="/googleplay.png" alt="Get it on Google Play" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Brands / Stats Log -->
-  <section class="trust-stats bg-light" id="stats">
-    <div class="container stats-grid">
-      <div class="stat-item">
-        <h2 class="text-blue count-up" data-target="10" data-suffix="M+">0M+</h2>
-        <p>Android Downloads</p>
-      </div>
-      <div class="stat-item">
-        <h2 class="text-blue count-up" data-target="84" data-suffix="K+">0K+</h2>
-        <p>Schedule Entries</p>
-      </div>
-      <div class="stat-item">
-        <h2 class="text-blue count-up" data-target="232" data-suffix="">0</h2>
-        <p>Trains Tracked</p>
-      </div>
-      <div class="stat-item">
-        <h2 class="text-blue count-up" data-target="100" data-suffix="%">0%</h2>
-        <p>Offline Ready</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="features" id="features">
-    <div class="container section-header reveal">
-      <h2>Comprehensive <span class="highlight-blue">Features</span></h2>
-      <p>Your ultimate digital companion for seamless urban mobility.</p>
-    </div>
-
-    <div class="container">
-      <div class="modern-features-grid reveal">
-
-        <!-- Local Train -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-blue-light text-blue">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="4" y="3" width="16" height="18" rx="2" ry="2"></rect>
-              <path d="M4 11h16"></path>
-              <path d="M12 3v8"></path>
-              <circle cx="8" cy="16" r="1.5"></circle>
-              <circle cx="16" cy="16" r="1.5"></circle>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Local Train Timetable</h3>
-        </div>
-
-        <!-- Metro -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-red-light text-red">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16"></path>
-              <path d="M4 8h16"></path>
-              <rect x="6" y="8" width="12" height="12" rx="2"></rect>
-              <circle cx="9" cy="16" r="1"></circle>
-              <circle cx="15" cy="16" r="1"></circle>
-              <path d="M12 8v4"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Metro Timetable</h3>
-        </div>
-
-        <!-- Mono Rail -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-blue-light text-blue">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 15h18"></path>
-              <path d="M8 15v3"></path>
-              <path d="M16 15v3"></path>
-              <path d="M12 4a3 3 0 0 0-3 3v8h6V7a3 3 0 0 0-3-3z"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Mono Rail Timetable</h3>
-        </div>
-
-        <!-- Bus Routes -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-red-light text-red">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="4" y="3" width="16" height="14" rx="2" ry="2"></rect>
-              <path d="M8 17v2"></path>
-              <path d="M16 17v2"></path>
-              <path d="M4 11h16"></path>
-              <circle cx="8" cy="14" r="1"></circle>
-              <circle cx="16" cy="14" r="1"></circle>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Bus Routes</h3>
-        </div>
-
-        <!-- Express Train -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-blue-light text-blue">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 21l3-3h8l3 3"></path>
-              <rect x="4" y="5" width="16" height="12" rx="2"></rect>
-              <path d="M4 10h16"></path>
-              <path d="M12 5v5"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Express Train Timetable</h3>
-        </div>
-
-        <!-- Auto Fares -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-red-light text-red">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 6l4 5 1 5-2 1-14-1-2-5 3-5h10z"></path>
-              <circle cx="6" cy="16" r="2"></circle>
-              <circle cx="16" cy="16" r="2"></circle>
-              <path d="M11 6v5h7"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Auto Fares</h3>
-        </div>
-
-        <!-- Taxi Fares -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-blue-light text-blue">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 10l-2 2v6h2v2h2v-2h10v2h2v-2h2v-6l-2-2"></path>
-              <path d="M19 10L17 5H7L5 10"></path>
-              <rect x="10" y="3" width="4" height="2"></rect>
-              <circle cx="7" cy="14" r="1"></circle>
-              <circle cx="17" cy="14" r="1"></circle>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Taxi Fares</h3>
-        </div>
-
-        <!-- Ferry -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-red-light text-red">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 17c-1.5 0-2 1-4 1s-2.5-1-4-1-2 1-4 1-2.5-1-4-1-2 1-4 1"></path>
-              <path d="M22 21c-1.5 0-2 1-4 1s-2.5-1-4-1-2 1-4 1-2.5-1-4-1-2 1-4 1"></path>
-              <path d="M4 16h16l-3-6H7l-3 6z"></path>
-              <path d="M9 10v-3h6v3"></path>
-              <path d="M12 7V4"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Ferry</h3>
-        </div>
-
-        <!-- Women Safety -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper" style="background: #fdf2f8; color: #db2777;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z"></path>
-              <path d="M12 12V3"></path>
-              <path d="M9 7h6"></path>
-              <path d="M12 21v3"></path>
-              <path d="M9 24h6"></path>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Women Safety</h3>
-        </div>
-
-        <!-- Emergency No. -->
-        <div class="m-feature-card">
-          <div class="m-icon-wrapper bg-red-light text-red">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-          </div>
-          <h3 class="m-feature-title">Emergency No.</h3>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Live Testimonials Section -->
-  <section class="testimonials-section bg-light" id="testimonials"
-    style="padding: 80px 0; overflow: hidden; position: relative;">
-    <div class="container text-center" style="margin-bottom: 40px;">
-      <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--primary-blue);">What Mumbai is Saying</h2>
-      <p style="color: var(--text-light); font-size: 1.125rem;">Live reviews sourced directly from the Google Play
-        Store.</p>
-    </div>
-
-    <div class="marquee-wrapper">
-      <div class="marquee">
-        <!-- Live Play Store Review 1 -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every
-            improvement with every update. No need to look for any another app of this type."</p>
-          <div class="t-user">
-            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo"
-              alt="Basant Malpani" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Basant Malpani</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Play Store Review 2 -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow
-            local, Mail train. its easy to use. Till now happy with the app."</p>
-          <div class="t-user">
-            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw"
-              alt="Jeniferstella" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Jeniferstella</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Play Store Review 3 -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">"Apps like m-Indicator set a great example of how public service apps should be developed.
-            The app is free to use and provides accurate and helpful information."</p>
-          <div class="t-user">
-            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjVNzAEydPKlRn6oAyt_nd34dvcophHBm1WShVwjHRIrgRKS5Mg"
-              alt="Deepak Sarafdar" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Deepak Sarafdar</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Play Store Review 4 -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★☆</div>
-          <p class="t-text">"App is good. Many newly added AC buses are showing in the list. Helpful for new commuters
-            navigating municipal corporation transport buses."</p>
-          <div class="t-user">
-            <img
-              src="https://play-lh.googleusercontent.com/a/ACg8ocIMs5hCiTA13bCCaOl6Xm0Eo7nlnrCt3JHyy6ENDQWcx9P8c3s=mo"
-              alt="Shrikant Panchal" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Shrikant Panchal</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Duplicate for CSS Marquee Loop -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">"Extremely useful app. I have been using it for more than ten years and admire every
-            improvement with every update. No need to look for any another app of this type."</p>
-          <div class="t-user">
-            <img src="https://play-lh.googleusercontent.com/a/ACg8ocIYECDRKCGlWliIeIk-jSZfgvaPyvfWJfJdBoUJiD7cW9Ca9w=mo"
-              alt="Basant Malpani" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Basant Malpani</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Duplicate for CSS Marquee Loop -->
-        <div class="testimonial-card">
-          <div class="t-stars">★★★★★</div>
-          <p class="t-text">"Using this app while traveling by train. Getting train timings for all fast local, Slow
-            local, Mail train. its easy to use. Till now happy with the app."</p>
-          <div class="t-user">
-            <img src="https://play-lh.googleusercontent.com/a-/ALV-UjX61jz8SvXXGSuAOAXCKZMCwe-aS3Qbbr0E-09gNI4ZPbApGIw"
-              alt="Jeniferstella" referrerpolicy="no-referrer">
-            <div class="t-info">
-              <strong>Jeniferstella</strong>
-              <span>Google Play Review</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Story & Extras Section -->
-  <section class="story-extras" id="story" style="padding: 0 0 120px 0;">
-    <div class="container">
-      <div style="display: flex; flex-wrap: wrap; gap: 64px; align-items: center;">
-        <div style="flex: 1; min-width: 300px;">
-          <h2 style="font-size: 2.5rem; margin-bottom: 24px;">Born out of <br><span class="highlight-red">commuter
-              frustration</span></h2>
-          <p style="color: var(--text-light); font-size: 1.125rem; margin-bottom: 24px;">Launched in 2010 by
-            <strong>Sachin
-              Suryakant Teke</strong>, m-Indicator started because one tech-commuter was fed up with chaotic train
-            information. It
-            wasn't just built for tech; it was built as a <strong>digital lifeline</strong> to navigate complex local
-            transport realistically.
-          </p>
-          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-            <img src="/founder.png" alt="Sachin Teke"
-              style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-            <div>
-              <div style="font-weight: 700; color: var(--text-dark); font-size: 1.1rem;">Sachin Suryakant Teke</div>
-              <a href="https://www.linkedin.com/in/sachin-teke-314213b3/" target="_blank"
-                style="color: var(--primary-blue); font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path
-                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg>
-                Connect on LinkedIn
-              </a>
-            </div>
-          </div>
-          <ul class="city-list">
-            <li><span class="dot red"></span> Women's Safety Module (Works Offline via SMS)</li>
-            <li><span class="dot blue"></span> Emergency Police & Jurisdiction Contacts</li>
-            <li><span class="dot red"></span> Hidden Peak-Hour "Less Crowded Train" pointers</li>
-            <li><span class="dot blue"></span> Classifieds, Jobs & Weekend Travel Guides</li>
-          </ul>
-        </div>
-        <div
-          style="flex: 1; min-width: 300px; background: var(--bg-light); padding: 40px; border-radius: 24px; border: 1px solid rgba(0,0,0,0.05);">
-          <h3 style="margin-bottom: 16px; font-size: 1.5rem; color: var(--primary-blue);">A Mobility Data Goldmine</h3>
-          <p style="color: var(--text-light); margin-bottom: 24px;">With tens of millions of daily routes queried and
-            shared, m-Indicator holds one of India's richest mobility datasets. This positions it perfectly to spearhead
-            future urban traffic routing and expansive analytic capabilities.</p>
-
-        </div>
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <!-- About Mobond Section -->
-  <section class="about-mobond bg-light" id="about"
-    style="padding: 100px 0; overflow: hidden; border-top: 1px solid rgba(0,0,0,0.05);">
-    <div class="container">
-      <div class="about-mobond-content reveal"
-        style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-        <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 64px;">About <span
-            class="highlight-blue">Mobond</span></h2>
-
-        <div
-          style="background: white; border-radius: 24px; padding: 48px; padding-top: 80px; box-shadow: 0 12px 32px rgba(0,0,0,0.05); max-width: 900px; margin: 0 auto 64px; position: relative; border: 1px solid rgba(0,0,0,0.04);">
-          <div
-            style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); background: white; padding: 16px 28px; border-radius: 20px; box-shadow: 0 8px 24px rgba(26,66,138,0.15); display: flex; align-items: center; justify-content: center; width: 180px; height: 100px; border: 2px solid #f0f4f8;">
-            <img src="/mobond logo.png" alt="Mobond Logo" style="width: 100%; height: 100%; object-fit: contain;">
-          </div>
-
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(193,0,0,0.1)" style="margin-bottom: 24px;">
-            <path
-              d="M14.017 21v-7.391c0-5.714 4.14-10.378 9.983-10.609l.002.396c0 .321 0 5.4.004 5.61-.397-.03-2.613-.016-3.841.258-1.57.348-2.673 1.341-3.267 2.923-.284.757-.428 1.636-.511 3.011l-2.37.002zM6.027 21v-7.391c0-5.714 4.136-10.378 9.979-10.609l.002.396c0 .321 0 5.4.004 5.61-.397-.03-2.613-.016-3.841.258-1.57.348-2.673 1.341-3.267 2.923-.284.757-.428 1.636-.511 3.011l-2.366.002z" />
-          </svg>
-
-          <p style="font-size: 1.15rem; color: var(--text-light); line-height: 1.8;">
-            Mobond launched our first free product <strong>m-Indicator</strong> in May 2010. <strong>Mobond</strong> is
-            a combination of two words <em>'Mob'</em> and <em>'Bond'</em>. The name suggests our aim is <strong>'bonding
-              the mob'</strong> or 'bonding the angry crowd'.<br><br>Mobond is dedicated to building software products
-            which will be fundamentally useful to the masses. We regularly collect and process massive amounts of
-            transit data from cities and towns in India to provide updated, reliable travel information to millions of
-            daily commuters.
-          </p>
-        </div>
-
-        <h3 style="font-size: 1.75rem; font-weight: 700; color: var(--text-dark); margin-bottom: 16px;">Featured In</h3>
-      </div>
-    </div>
-
-    <div class="logo-marquee-wrapper reveal">
-      <div class="logo-marquee">
-        <!-- Original Set -->
-        <img src="/logos/times-of-india.png" alt="Times of India">
-        <img src="/logos/mid-day.png" alt="Mid-Day">
-        <img src="/logos/hindustan-times.png" alt="Hindustan Times">
-        <img src="/logos/loksattap.png" alt="Loksatta">
-        <img src="/logos/lokmat.jpg" alt="Lokmat">
-        <img src="/logos/prahar.png" alt="Prahar">
-        <img src="/logos/saamana.jpg" alt="Saamana">
-
-        <!-- Duplicates for scrolling effect -->
-        <img src="/logos/times-of-india.png" alt="Times of India">
-        <img src="/logos/mid-day.png" alt="Mid-Day">
-        <img src="/logos/hindustan-times.png" alt="Hindustan Times">
-        <img src="/logos/loksattap.png" alt="Loksatta">
-        <img src="/logos/lokmat.jpg" alt="Lokmat">
-        <img src="/logos/prahar.png" alt="Prahar">
-        <img src="/logos/saamana.jpg" alt="Saamana">
-      </div>
-    </div>
-  </section>
-
-  <!-- City Overview Section -->
-  <section class="cities-section" id="cities">
-    <div class="container cities-content">
-      <div class="cities-text">
-        <h2>Connecting India's<br><span class="highlight-blue">Mega Cities</span></h2>
-        <p>From the bustling local trains of Mumbai to the sprawling metro network of Delhi, m-Indicator brings clarity
-          to urban mobility across India.</p>
-        <ul class="city-list">
-          <li><span class="dot red"></span> Mumbai (Local, Metro, Bus, Mono)</li>
-          <li><span class="dot blue"></span> Pune (Bus, Local)</li>
-          <li><span class="dot red"></span> Delhi (Metro, Bus)</li>
-          <li><span class="dot blue"></span> Ahmedabad, Bengaluru &amp; more...</li>
-        </ul>
-        <a href="#download" class="link-arrow">View All Features &rarr;</a>
-      </div>
-      <div class="cities-map">
-        <div id="india-map"
-          style="width:100%; height:420px; border-radius:20px; overflow:hidden; box-shadow:0 8px 40px rgba(26,66,138,0.18);">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Map Init Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var map = L.map('india-map', {
-        center: [20.5937, 78.9629],
-        zoom: 5,
-        zoomControl: true,
-        scrollWheelZoom: false,
-        attributionControl: false
-      });
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
-      }).addTo(map);
-
-      function makeIcon(color) {
-        return L.divIcon({
-          className: '',
-          html: '<div style="width:16px;height:16px;background:' + color + ';border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.4);position:relative;"><div style="width:32px;height:32px;background:' + color + '33;border-radius:50%;position:absolute;top:-8px;left:-8px;animation:leaflet-pulse 2s ease-in-out infinite;"></div></div>',
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
-          popupAnchor: [0, -12]
-        });
+    // ---- Floating particles ----
+    (function() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 4 + 2;
+        p.style.cssText = `
+          left: ${Math.random() * 100}%;
+          width: ${size}px; height: ${size}px;
+          animation-duration: ${Math.random() * 8 + 6}s;
+          animation-delay: ${Math.random() * 8}s;
+          opacity: ${Math.random() * 0.6 + 0.2};
+          background: ${Math.random() > 0.5 ? '#D50100' : '#1A428A'};
+        `;
+        container.appendChild(p);
       }
+    })();
 
-      var redIcon = makeIcon('#C10000');
-      var blueIcon = makeIcon('#1A428A');
+    // ---- Reveal on scroll ----
+    (function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    })();
 
-      var cities = [
-        { name: 'Mumbai', lat: 19.0760, lng: 72.8777, icon: redIcon, modes: 'Local Train · Metro · Bus · Mono Rail' },
-        { name: 'Navi Mumbai', lat: 19.0368, lng: 73.0158, icon: redIcon, modes: 'Local Train · Bus' },
-        { name: 'Thane', lat: 19.2183, lng: 72.9781, icon: redIcon, modes: 'Local Train · Bus' },
-        { name: 'Pune', lat: 18.5204, lng: 73.8567, icon: blueIcon, modes: 'Bus · Local Train' },
-        { name: 'Delhi', lat: 28.6139, lng: 77.2090, icon: redIcon, modes: 'Metro · Bus · DTC' },
-        { name: 'Bengaluru', lat: 12.9716, lng: 77.5946, icon: blueIcon, modes: 'Metro · Bus · BMTC' },
-        { name: 'Ahmedabad', lat: 23.0225, lng: 72.5714, icon: blueIcon, modes: 'AMTS Bus · BRTS · Metro' },
-        { name: 'Nashik', lat: 19.9975, lng: 73.7898, icon: blueIcon, modes: 'City Bus' },
-        { name: 'Nagpur', lat: 21.1458, lng: 79.0882, icon: blueIcon, modes: 'Bus · Metro' },
-        { name: 'Surat', lat: 21.1702, lng: 72.8311, icon: blueIcon, modes: 'BRTS Bus' },
-      ];
-
-      cities.forEach(function (city) {
-        L.marker([city.lat, city.lng], { icon: city.icon })
-          .addTo(map)
-          .bindPopup(
-            '<div style="font-family:Inter,sans-serif;min-width:150px;">'
-            + '<div style="font-weight:800;font-size:0.95rem;color:#0f172a;margin-bottom:4px;">' + city.name + '</div>'
-            + '<div style="font-size:0.78rem;color:#64748b;">' + city.modes + '</div>'
-            + '</div>',
-            { offset: [0, -4] }
-          );
+    // ---- Count-up ----
+    function countUp(el) {
+      const target = parseInt(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const duration = 2000;
+      const start = performance.now();
+      function step(ts) {
+        const progress = Math.min((ts - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { countUp(e.target); countObserver.unobserve(e.target); }
       });
-
-      // Ensure map renders correctly after intro overlay fades out
-      setTimeout(function () { map.invalidateSize(); }, 3200);
-      // Also invalidate on window resize
-      window.addEventListener('resize', function () { map.invalidateSize(); });
-    });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.count-up').forEach(el => countObserver.observe(el));
   </script>
-
-
-  <!-- Download CTA -->
-  <section class="cta-section" id="download">
-    <div class="container cta-box">
-      <div class="cta-content">
-        <h2>Ready to make your commute smoother?</h2>
-        <p>Join millions of smart commuters and never miss a beat.</p>
-        <div class="hero-buttons center">
-          <a href="https://itunes.apple.com/in/app/m-indicator/id593278253?mt=8" target="_blank" class="store-img-btn">
-            <img src="/appstore.png" alt="Download on App Store" />
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=com.mobond.mindicator" target="_blank"
-            class="store-img-btn">
-            <img src="/googleplay.png" alt="Get it on Google Play" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-content">
-      <div class="footer-brand">
-        <div class="logo">
-          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="45" fill="#C10000" />
-            <circle cx="50" cy="50" r="26" fill="white" />
-            <rect x="0" y="38" width="100" height="24" rx="4" fill="#1A428A" />
-            <circle cx="50" cy="50" r="7" fill="white" />
-            <path d="M18 50L30 40V60L18 50Z" fill="white" />
-            <path d="M82 50L70 40V60L82 50Z" fill="white" />
-            <rect x="34" y="47" width="8" height="6" fill="white" />
-            <rect x="58" y="47" width="8" height="6" fill="white" />
-          </svg>
-          <span class="brand-name text-white"><strong>m</strong>-Indicator</span>
-        </div>
-        <p class="mt-2 text-light">Built for the Indian Commuter.</p>
-      </div>
-      <div class="footer-links">
-        <div class="link-group">
-          <h4>Company</h4>
-          <a href="#">About Us</a>
-          <a href="/M-indicator-2.0/contact.html">Contact Us</a>
-          <a href="/M-indicator-2.0/resumedb.html">ResumeDB</a>
-          <a href="/M-indicator-2.0/news.html" style="font-weight: 700; color: var(--primary-blue);">News</a>
-          <a href="/M-indicator-2.0/ad.html" style="font-weight: 600; color: var(--primary-blue);">Advertise with Us</a>
-        </div>
-        <div class="link-group">
-          <h4>Legal</h4>
-          <a href="/M-indicator-2.0/terms.html">Privacy Policy</a>
-          <a href="/M-indicator-2.0/terms.html">Terms of Service</a>
-        </div>
-        <div class="link-group">
-          <h4>Connect</h4>
-          <div style="display: flex; gap: 16px;">
-            <a href="https://x.com/m_indicator_app?s=20" target="_blank"
-              style="color: #A0AEC0; transition: color 0.3s ease;" onmouseover="this.style.color='var(--primary-red)'"
-              onmouseout="this.style.color='#A0AEC0'">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-              target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
-              onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/m.indicator.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-              target="_blank" style="color: #A0AEC0; transition: color 0.3s ease;"
-              onmouseover="this.style.color='var(--primary-red)'" onmouseout="this.style.color='#A0AEC0'">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container footer-bottom">
-      <p>&copy; 2026 Mobond App. All rights reserved.</p>
-    </div>
-  </footer>
 
   <script type="module" src="/src/main.js"></script>
 </body>
-
 </html>
