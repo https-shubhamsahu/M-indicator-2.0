@@ -833,6 +833,15 @@
             document.body.style.overflow = '';
         }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+        // Auto-close drawer on link click
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.drawer-nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    closeDrawer();
+                });
+            });
+        });
     </script>
 
     <main class="upcoming-main">

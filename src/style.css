@@ -1,4 +1,4 @@
-﻿/* Color Palette */
+/* Color Palette */
 :root {
   --primary-red: #C10000;
   --primary-red-hover: #A30000;
@@ -913,6 +913,16 @@ footer {
 
   .hero {
     padding: 120px 0 60px;
+  }
+
+  /* Cities map responsive fix */
+  .cities-map {
+    min-width: 100%;
+    margin-top: 32px;
+  }
+
+  #india-map {
+    height: 350px !important;
   }
 
   /* Footer mobile fix */
